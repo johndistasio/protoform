@@ -17,6 +17,7 @@ Hello there, sleepyhead! Good morning!
 ```
 
 ## Things to do
+- [ ] Can the custom flag parsing logic be replaced by the standard flags package? Initial design required a custom flag parser; this is probably no longer true.
 - [ ] Support more complex data than plain strings (arrays and maps, etc.)
 - [ ] In-place file writing
 - [ ] Better error messages

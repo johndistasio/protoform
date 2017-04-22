@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -53,8 +54,19 @@ func parseArgs(args []string) Args {
 				printUsage(os.Stderr)
 				os.Exit(1)
 			}
+
 		} else if idx := strings.Index(arg, "="); idx > -1 {
-			pargs.Data[arg[:idx]] = arg[idx+1:]
+			var val interface{}
+			err := json.Unmarshal([]byte(arg), &val)
+
+			if err != nil {
+				// Assume the parser errors on unquoted strings and treat the
+				// value as such.
+				// TODO: Verify this assumption is valid
+				pargs.Data[arg[:idx]] = arg[idx+1:]
+			} else {
+			}
+
 		} else {
 			pargs.Template = arg
 		}
