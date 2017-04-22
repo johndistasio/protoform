@@ -4,6 +4,18 @@ A really simple provisioning tool, intended to set basic properties of a system 
 
 This uses Go's built-in templating system.
 
+Given `example.tmpl`:
+```
+Hello there, {{.name}}! Good {{.time}}!
+```
+
+We can use `protoform` to write a friendly message to admins that like to sleep in:
+```
+$ protoform name=sleepyhead time=morning > /etc/motd
+$ cat /etc/motd
+Hello there, sleepyhead! Good morning!
+```
+
 Things to do:
 * Support more complex data than plain strings (arrays and maps, etc.)
 * In-place file writing
