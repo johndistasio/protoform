@@ -2,7 +2,7 @@
 
 A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images and handling this kind of task now.
 
-This uses Go's standard templating package, for, well, templating, and accepts JSON-formatted more complex data like arrays and maps.
+This uses Go's standard templating package, for, well, templating, and accepts JSON-formatted strings for more complex data like arrays and maps.
 
 ## Examples
 
