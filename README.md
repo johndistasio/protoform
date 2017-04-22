@@ -11,7 +11,7 @@ Hello there, {{.name}}! Good {{.time}}!
 
 We can use `protoform` to write a friendly message to admins that like to sleep in:
 ```
-$ protoform name=sleepyhead time=morning > /etc/motd
+$ protoform name=sleepyhead time=morning example.tmpl > /etc/motd
 $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
