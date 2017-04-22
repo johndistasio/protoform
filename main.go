@@ -56,17 +56,20 @@ func parseArgs(args []string) Args {
 			}
 
 		} else if idx := strings.Index(arg, "="); idx > -1 {
-			var val interface{}
-			err := json.Unmarshal([]byte(arg), &val)
+			key := arg[:idx]
+			val := arg[idx+1:]
+
+			var complex interface{}
+			err := json.Unmarshal([]byte(val), &complex)
 
 			if err != nil {
 				// Assume the parser errors on unquoted strings and treat the
 				// value as such.
 				// TODO: Verify this assumption is valid
-				pargs.Data[arg[:idx]] = arg[idx+1:]
+				pargs.Data[key] = val
 			} else {
+				pargs.Data[key] = complex
 			}
-
 		} else {
 			pargs.Template = arg
 		}
