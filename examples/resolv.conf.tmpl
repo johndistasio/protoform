@@ -1,0 +1,9 @@
+{{ range .nameservers -}}
+nameserver {{ . }}
+{{ end -}}
+
+domain {{ .domain }}
+
+{{ range $key, $value := .options -}}
+option {{ $key }}{{ with $value }}{{ printf ":%s" . }}{{end}}
+{{ end -}}
