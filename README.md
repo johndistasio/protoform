@@ -16,9 +16,7 @@ $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
 
-Things to do:
-* Support more complex data than plain strings (arrays and maps, etc.)
-* In-place file writing
-* Better error messages
-* ???
-
+## Things to do
+- [ ] Support more complex data than plain strings (arrays and maps, etc.)
+- [ ] In-place file writing
+- [ ] Better error messages
