@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -40,8 +41,9 @@ Example:
 `)
 }
 
-func parseArgs(args []string) Args {
+func parseArgs(args []string) (Args, error) {
 	pargs := newArgs()
+	var perr error = nil
 
 	for _, arg := range args {
 		if strings.Index(arg, "-") == 0 {
@@ -50,9 +52,7 @@ func parseArgs(args []string) Args {
 				printUsage(os.Stdout)
 				os.Exit(0)
 			default:
-				fmt.Fprintf(os.Stderr, "Unrecognized argument %s\n", arg)
-				printUsage(os.Stderr)
-				os.Exit(1)
+				perr = errors.New(fmt.Sprintf("unrecognized argument %s", arg))
 			}
 
 		} else if idx := strings.Index(arg, "="); idx > -1 {
@@ -74,11 +74,16 @@ func parseArgs(args []string) Args {
 			pargs.Template = arg
 		}
 	}
-	return pargs
+	return pargs, perr
 }
 
 func main() {
-	args := parseArgs(os.Args)
+	args, err := parseArgs(os.Args)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse arguments: %s\n", err.Error())
+		os.Exit(1)
+	}
 
 	t, err := template.ParseFiles(args.Template)
 
