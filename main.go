@@ -83,16 +83,14 @@ func main() {
 	t, err := template.ParseFiles(args.Template)
 
 	if err != nil {
-		// TODO: Provide more information to the user here.
-		fmt.Fprintln(os.Stderr, "Failed to parse template")
+		fmt.Fprintf(os.Stderr, "Failed to parse template: %s\n", err.Error())
 		os.Exit(1)
 	}
 
 	err = t.Execute(os.Stdout, args.Data)
 
 	if err != nil {
-		// TODO: Provide more information to the user here.
-		fmt.Fprintln(os.Stderr, "Failed to output template")
+		fmt.Fprintf(os.Stderr, "Failed to render template: %s\n", err.Error())
 		os.Exit(1)
 	}
 }
