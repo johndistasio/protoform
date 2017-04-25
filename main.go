@@ -2,60 +2,30 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
+	"flag"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"text/template"
 )
 
-type Args struct {
+type parameters struct {
 	Data     map[string]interface{}
 	Template string
 }
 
-func newArgs() Args {
-	return Args{
+func newParameters() parameters {
+	return parameters{
 		Data:     make(map[string]interface{}),
 		Template: "",
 	}
 }
 
-func printUsage(w io.Writer) {
-	fmt.Fprint(w, `Usage: protoform [args] [template args] template
+func parseParameters(cli []string) parameters {
+	params := newParameters()
 
-Arguments:
-    -h, -help: print this text and exit
-
-Template Arguments:
-    Template arguments take the form of key=value and are used in the template.
-
-Template:
-    The last argument that doesn't start with a "-" or include a "=" is used as
-    the path to the template. The template must use the normal Go text template
-    format.
-
-Example:
-    protoform color=red kind=sedan car.tmpl > car
-`)
-}
-
-func parseArgs(args []string) (Args, error) {
-	pargs := newArgs()
-	var perr error = nil
-
-	for _, arg := range args {
-		if strings.Index(arg, "-") == 0 {
-			switch arg {
-			case "-h", "-help":
-				printUsage(os.Stdout)
-				os.Exit(0)
-			default:
-				perr = errors.New(fmt.Sprintf("unrecognized argument %s", arg))
-			}
-
-		} else if idx := strings.Index(arg, "="); idx > -1 {
+	for _, arg := range cli {
+		if idx := strings.Index(arg, "="); idx > -1 {
 			key := arg[:idx]
 			val := arg[idx+1:]
 
@@ -65,33 +35,57 @@ func parseArgs(args []string) (Args, error) {
 			if err != nil {
 				// If we can't parse the input as JSON, treat it as a plain
 				// string.
-				pargs.Data[key] = val
+				params.Data[key] = val
 			} else {
-				pargs.Data[key] = complex
+				params.Data[key] = complex
 			}
 		} else {
-			pargs.Template = arg
+			params.Template = arg
 		}
 	}
-	return pargs, perr
+
+	return params
+}
+
+func init() {
+	flag.Usage = func() {
+		fmt.Print(`Usage: protoform [args] [template params] template
+
+Arguments:
+    -h, -help: print this text and exit
+
+Template Parameters:
+    Template arguments take the form of key=value and are used in the template.
+
+Template:
+    The last argument that doesn't start with a "-" or include a "=" is used as
+    the path to the template. The template must use the normal Go text template
+    format.
+
+Example:
+    $ protoform color=red kind=sedan car.tmpl > car
+`)
+	}
 }
 
 func main() {
-	args, err := parseArgs(os.Args)
+	helpPtr := flag.Bool("help", false, "")
+	flag.Parse()
 
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse arguments: %s\n", err.Error())
-		os.Exit(1)
+	// The flag package doesn't seem to respect long-form "help"?
+	if *helpPtr {
+		flag.Usage()
 	}
 
-	t, err := template.ParseFiles(args.Template)
+	params := parseParameters(flag.Args())
+	t, err := template.ParseFiles(params.Template)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to parse template: %s\n", err.Error())
 		os.Exit(1)
 	}
 
-	err = t.Execute(os.Stdout, args.Data)
+	err = t.Execute(os.Stdout, params.Data)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to render template: %s\n", err.Error())
