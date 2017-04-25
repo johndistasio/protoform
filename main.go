@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -52,7 +53,10 @@ func init() {
 		fmt.Print(`Usage: protoform [args] [template params] template
 
 Arguments:
-    -h, -help: print this text and exit
+    -help:
+        Print this text and exit.
+    -inplace:
+        Write in-place instead of to standard output.
 
 Template Parameters:
     Template arguments take the form of key=value and are used in the template.
@@ -70,6 +74,7 @@ Example:
 
 func main() {
 	helpPtr := flag.Bool("help", false, "")
+	inplacePtr := flag.Bool("inplace", false, "")
 	flag.Parse()
 
 	// The flag package doesn't seem to respect long-form "help"?
@@ -85,7 +90,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = t.Execute(os.Stdout, params.Data)
+	if *inplacePtr {
+		f, err := os.OpenFile(params.Template, os.O_WRONLY, 0600)
+		defer f.Close()
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to open file: %s\n", err.Error())
+			os.Exit(1)
+		}
+
+		buf := new(bytes.Buffer)
+		err = t.Execute(buf, params.Data)
+		f.WriteString(buf.String())
+
+	} else {
+		err = t.Execute(os.Stdout, params.Data)
+	}
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to render template: %s\n", err.Error())
