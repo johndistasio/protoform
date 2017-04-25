@@ -63,9 +63,8 @@ func parseArgs(args []string) (Args, error) {
 			err := json.Unmarshal([]byte(val), &complex)
 
 			if err != nil {
-				// Assume the parser errors on unquoted strings and treat the
-				// value as such.
-				// TODO: Verify this assumption is valid
+				// If we can't parse the input as JSON, treat it as a plain
+				// string.
 				pargs.Data[key] = val
 			} else {
 				pargs.Data[key] = complex
