@@ -48,4 +48,4 @@ option timeout:5
 - [x] Support more complex data than plain strings (arrays and maps, etc.)
 - [ ] Custom template functions for handy data manipulations (i.e. starting an array-based list at 1)
 - [ ] In-place file writing
-- [ ] Better error messages
+- [x] Better error messages
