@@ -44,7 +44,7 @@ option timeout:5
 ```
 
 ## Things to do
-- [ ] Try replacing the custom parsing logic with the standard flags package. Initial design required a custom flag parser, but this is probably no longer true.
+- [x] Try replacing the custom parsing logic with the standard flags package. Initial design required a custom flag parser, but this is probably no longer true.
 - [x] Support more complex data than plain strings (arrays and maps, etc.)
 - [ ] Custom template functions for handy data manipulations (i.e. starting an array-based list at 1)
 - [x] In-place file writing
