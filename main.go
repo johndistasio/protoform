@@ -72,6 +72,11 @@ Example:
 	}
 }
 
+func exitOnError(err error) {
+	fmt.Fprintln(os.Stderr, err.Error())
+	os.Exit(1)
+}
+
 func main() {
 	helpPtr := flag.Bool("help", false, "")
 	inplacePtr := flag.Bool("inplace", false, "")
@@ -86,29 +91,31 @@ func main() {
 	t, err := template.ParseFiles(params.Template)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to parse template: %s\n", err.Error())
-		os.Exit(1)
+		exitOnError(err)
 	}
 
 	if *inplacePtr {
-		f, err := os.OpenFile(params.Template, os.O_WRONLY, 0600)
+		f, err := os.OpenFile(params.Template, os.O_WRONLY|os.O_TRUNC, 0600)
 		defer f.Close()
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to open file: %s\n", err.Error())
-			os.Exit(1)
+			exitOnError(err)
 		}
 
 		buf := new(bytes.Buffer)
 		err = t.Execute(buf, params.Data)
-		f.WriteString(buf.String())
+
+		if err != nil {
+			exitOnError(err)
+		}
+
+		_, err = f.WriteString(buf.String())
 
 	} else {
 		err = t.Execute(os.Stdout, params.Data)
 	}
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to render template: %s\n", err.Error())
-		os.Exit(1)
+		exitOnError(err)
 	}
 }
