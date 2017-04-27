@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 )
@@ -70,6 +71,7 @@ Example:
     $ protoform color=red kind=sedan car.tmpl > car
 `)
 	}
+
 }
 
 func exitOnError(err error) {
@@ -88,7 +90,8 @@ func main() {
 	}
 
 	params := parseParameters(flag.Args())
-	t, err := template.ParseFiles(params.Template)
+	t, err := template.New(filepath.Base(params.Template)).ParseFiles(
+		params.Template)
 
 	if err != nil {
 		exitOnError(err)
