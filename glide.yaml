@@ -1,0 +1,4 @@
+package: github.com/johndistasio/protoform
+import:
+- package: github.com/Masterminds/sprig
+  version: 2.10.0

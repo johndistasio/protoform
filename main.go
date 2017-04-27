@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/Masterminds/sprig"
 )
 
 type parameters struct {
@@ -90,8 +92,8 @@ func main() {
 	}
 
 	params := parseParameters(flag.Args())
-	t, err := template.New(filepath.Base(params.Template)).ParseFiles(
-		params.Template)
+	t, err := template.New(filepath.Base(params.Template)).Funcs(
+		sprig.TxtFuncMap()).ParseFiles(params.Template)
 
 	if err != nil {
 		exitOnError(err)
