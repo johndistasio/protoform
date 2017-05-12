@@ -37,8 +37,7 @@ func parseParameters(cli []string) parameters {
 			err := json.Unmarshal([]byte(val), &complex)
 
 			if err != nil {
-				// If we can't parse the input as JSON, treat it as a plain
-				// string.
+				// If we can't parse the input as JSON, treat it as plain text.
 				params.Data[key] = val
 			} else {
 				params.Data[key] = complex
