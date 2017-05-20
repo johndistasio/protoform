@@ -6,8 +6,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/Masterminds/sprig"
 )
 
 type parameters struct {
@@ -34,8 +37,7 @@ func parseParameters(cli []string) parameters {
 			err := json.Unmarshal([]byte(val), &complex)
 
 			if err != nil {
-				// If we can't parse the input as JSON, treat it as a plain
-				// string.
+				// If we can't parse the input as JSON, treat it as plain text.
 				params.Data[key] = val
 			} else {
 				params.Data[key] = complex
@@ -70,6 +72,7 @@ Example:
     $ protoform color=red kind=sedan car.tmpl > car
 `)
 	}
+
 }
 
 func exitOnError(err error) {
@@ -88,7 +91,8 @@ func main() {
 	}
 
 	params := parseParameters(flag.Args())
-	t, err := template.ParseFiles(params.Template)
+	t, err := template.New(filepath.Base(params.Template)).Funcs(
+		sprig.TxtFuncMap()).ParseFiles(params.Template)
 
 	if err != nil {
 		exitOnError(err)
