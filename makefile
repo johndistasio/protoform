@@ -1,7 +1,7 @@
 # vi: set ft=make:
 
 APP_NAME=protoform
-APP_VERSION=0.5.0
+APP_VERSION=0.6.0
 
 BUILT=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
