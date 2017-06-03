@@ -16,13 +16,14 @@ import (
 )
 
 var (
-	Built     string
-	GoArch    string
-	GoOs      string
-	GoVersion string
-	Name      string
-	Revision  string
-	Version   string
+	Built       string
+	GitRevision string
+	GitTag      string
+	GoArch      string
+	GoOs        string
+	GoVersion   string
+	Name        string
+	Version     string
 )
 
 type parameters struct {
@@ -111,8 +112,8 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Fprintf(os.Stdout, "%s version=%s revision=%s go=%s os=%s arch=%s built=%s\n",
-			Name, Version, Revision, GoVersion, GoOs, GoArch, Built)
+		fmt.Fprintf(os.Stdout, "%s version=%s revision=%s tag=%s go=%s os=%s arch=%s built=%s\n",
+			Name, Version, GitRevision, GitTag, GoVersion, GoOs, GoArch, Built)
 		os.Exit(0)
 	}
 
