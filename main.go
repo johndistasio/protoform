@@ -12,16 +12,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Masterminds/sprig"
-)
+	"github.com/johndistasio/protoform/version"
 
-var (
-	Built     string
-	GoArch    string
-	GoOs      string
-	GoVersion string
-	Name      string
-	Version   string
+	"github.com/Masterminds/sprig"
 )
 
 type parameters struct {
@@ -110,8 +103,7 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Fprintf(os.Stdout, "%s version=%s go=%s os=%s arch=%s built=%s\n",
-			Name, Version, GoVersion, GoOs, GoArch, Built)
+		fmt.Println(version.ComputeVersionString())
 		os.Exit(0)
 	}
 

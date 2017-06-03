@@ -1,28 +1,28 @@
 # vi: set ft=make:
 
-NAME=protoform
-VERSION=0.5.0
+VERSION = 0.6.0
+PACKAGE = github.com/johndistasio/protoform
 
-BUILT=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+GIT_REVISION = $(shell git rev-parse --short HEAD)
+GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
 
-EXCLUDES=$(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
+GO_ARCH    = $(shell go env GOARCH)
+GO_OS      = $(shell go env GOOS)
+GO_VERSION = $(shell go version | awk '{print $$3}' | tr -d 'go')
+GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GIT_REVISION) tag=$(GIT_TAG) goarch=$(GO_ARCH) goos=$(GO_OS) goversion=$(GO_VERSION))
 
-GOARCH=$(shell go env GOARCH)
-GOOS=$(shell go env GOOS)
-GOVERSION=$(shell go version | awk '{print $$3}' | tr -d 'go')
-
-GOLDFLAGS='$(addprefix -X main.,Name=$(NAME) Version=$(VERSION) Built=$(BUILT) GoVersion=$(GOVERSION) GoOs=$(GOOS) GoArch=$(GOARCH))'
+TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
 .PHONY: build
 default: build
 
 archive:
 	mkdir -p build/
-	tar $(EXCLUDES) -czvf build/$(NAME)-$(VERSION).tar.gz .
+	tar $(TARBALL_EXCLUDE) -czvf build/protoform-$(VERSION).tar.gz .
 
 build:
 	mkdir -p build/
-	go build -ldflags $(GOLDFLAGS) -v -o build/$(NAME) github.com/johndistasio/$(NAME)
+	go build -ldflags '$(GO_LDFLAGS)' -v -o build/protoform github.com/johndistasio/protoform
 
 clean:
 	rm -rf build/

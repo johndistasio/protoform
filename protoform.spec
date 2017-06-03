@@ -1,5 +1,5 @@
 Name:          protoform
-Version:       0.5.0
+Version:       0.6.0
 Release:       1%{dist}
 Summary:       Protoform - a simple provisioning tool.
 License:       MIT
@@ -26,5 +26,7 @@ install -p -m 0755 ./build/%{name} %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Jun 3 2017 John DiStasio <jndistasio@gmail.com> - 0.6.0-1
+- Increment version to 0.6.0
 * Sat May 20 2017 John DiStasio <jndistasio@gmail.com> - 0.5.0-1
 - Initial version of the package
