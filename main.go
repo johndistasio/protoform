@@ -24,21 +24,24 @@ type parameters struct {
 
 func init() {
 	flag.Usage = func() {
-		fmt.Print(`Usage: cauldron [arguments] [template params] template
+		fmt.Print(`Usage: cauldron [arguments] [template parameters] template
 
 Arguments:
     -help:
         Print this text and exit.
     -inplace:
-        Write in-place instead of to standard output.
+        Render the template in-place (overwriting the template) instead of to
+        standard output.
     -json:
-        Read template data from the specified JSON file. Command-line parameters
-		are ignored.
+        Read template data from the specified JSON file. Command-line template
+        parameters are ignored.
     -version:
         Print version and build details, then exit.
 
 Template Parameters:
-    Template arguments take the form of key=value and are used in the template.
+    Template parameters take the form of key=value and are used to populate the
+    template. The parameter 'color=red' would be referenced in the template as
+    {{ .color }}.
 
 Template:
     The last argument that doesn't start with a "-" or include a "=" is used as
