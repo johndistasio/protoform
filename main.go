@@ -18,19 +18,47 @@ import (
 )
 
 type parameters struct {
-	Data     map[string]interface{}
-	Template string
+	Data         map[string]interface{}
+	TemplatePath string
 }
 
-func newParameters() parameters {
-	return parameters{
-		Data:     make(map[string]interface{}),
-		Template: "",
+func init() {
+	flag.Usage = func() {
+		fmt.Print(`Usage: cauldron [arguments] [template parameters] template
+
+Arguments:
+    -help:
+        Print this text and exit.
+    -inplace:
+        Render the template in-place (overwriting the template) instead of to
+        standard output.
+    -json:
+        Read template data from the specified JSON file. Command-line template
+        parameters are ignored.
+    -version:
+        Print version and build details, then exit.
+
+Template Parameters:
+    Template parameters take the form of key=value and are used to populate the
+    template. The parameter 'color=red' would be referenced in the template as
+    {{ .color }}.
+
+Template:
+    The last argument that doesn't start with a "-" or include a "=" is used as
+    the path to the template. The template must use the normal Go text template
+    format.
+
+Example:
+    $ cauldron color=red kind=sedan car.tmpl > car
+`)
 	}
 }
 
 func parseParameters(cli []string) parameters {
-	params := newParameters()
+	params := parameters{
+		Data:         make(map[string]interface{}),
+		TemplatePath: "",
+	}
 
 	for _, arg := range cli {
 		if idx := strings.Index(arg, "="); idx > -1 {
@@ -47,44 +75,14 @@ func parseParameters(cli []string) parameters {
 				params.Data[key] = complex
 			}
 		} else {
-			params.Template = arg
+			params.TemplatePath = arg
 		}
 	}
 
 	return params
 }
 
-func init() {
-	flag.Usage = func() {
-		fmt.Print(`Usage: cauldron [arguments] [template params] template
-
-Arguments:
-    -help:
-        Print this text and exit.
-    -inplace:
-        Write in-place instead of to standard output.
-    -json:
-        Read template data from the specified JSON file. Command-line parameters
-		are ignored.
-    -version:
-        Print version and build details, then exit.
-
-Template Parameters:
-    Template arguments take the form of key=value and are used in the template.
-
-Template:
-    The last argument that doesn't start with a "-" or include a "=" is used as
-    the path to the template. The template must use the normal Go text template
-    format.
-
-Example:
-    $ cauldron color=red kind=sedan car.tmpl > car
-`)
-	}
-
-}
-
-func exitOnError(err error) {
+func quit(err error) {
 	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
 }
@@ -109,8 +107,8 @@ func main() {
 
 	params := parseParameters(flag.Args())
 
-	if len(params.Template) == 0 {
-		exitOnError(errors.New("no template specified"))
+	if len(params.TemplatePath) == 0 {
+		quit(errors.New("no template specified"))
 	}
 
 	if len(*jsonPtr) != 0 {
@@ -118,39 +116,39 @@ func main() {
 		err = json.Unmarshal(jsondata, &params.Data)
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 	}
 
-	templ, err := template.New(filepath.Base(params.Template)).Funcs(
-		sprig.TxtFuncMap()).ParseFiles(params.Template)
+	tmpl, err := template.New(filepath.Base(params.TemplatePath)).Funcs(
+		sprig.TxtFuncMap()).ParseFiles(params.TemplatePath)
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
 	}
 
 	if *inplacePtr {
-		file, err := os.OpenFile(params.Template, os.O_WRONLY|os.O_TRUNC, 0600)
+		file, err := os.OpenFile(params.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
 		defer file.Close()
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 
 		buf := new(bytes.Buffer)
-		err = templ.Execute(buf, params.Data)
+		err = tmpl.Execute(buf, params.Data)
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 
 		_, err = file.WriteString(buf.String())
 
 	} else {
-		err = templ.Execute(os.Stdout, params.Data)
+		err = tmpl.Execute(os.Stdout, params.Data)
 	}
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
 	}
 }
