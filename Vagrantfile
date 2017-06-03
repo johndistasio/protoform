@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
     guest.vm.box = 'bento/fedora-25'
     guest.vm.hostname = 'fedora25'
     guest.vm.provision 'shell', inline: <<-SHELL
-      dnf install -y rpm-build make golang
+      dnf install -y rpm-build make tree golang
     SHELL
   end
 end
