@@ -15,3 +15,4 @@ rpmbuild/
 
 .glide/
 .idea/
+.vagrant/
