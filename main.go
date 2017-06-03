@@ -21,6 +21,7 @@ var (
 	GoOs      string
 	GoVersion string
 	Name      string
+	Revision  string
 	Version   string
 )
 
@@ -110,8 +111,8 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Fprintf(os.Stdout, "%s version=%s go=%s os=%s arch=%s built=%s\n",
-			Name, Version, GoVersion, GoOs, GoArch, Built)
+		fmt.Fprintf(os.Stdout, "%s version=%s revision=%s go=%s os=%s arch=%s built=%s\n",
+			Name, Version, Revision, GoVersion, GoOs, GoArch, Built)
 		os.Exit(0)
 	}
 
