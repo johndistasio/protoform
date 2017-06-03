@@ -17,12 +17,12 @@ TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 default: build
 
 archive:
-	mkdir -p build/
+	@mkdir -p build/
 	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(VERSION).tar.gz .
 
 build:
-	mkdir -p build/
+	@mkdir -p build/
 	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron github.com/johndistasio/cauldron
 
 clean:
-	rm -rf build/
+	@rm -rf build/
