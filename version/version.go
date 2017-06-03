@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-var version_string = "protoform "
-
 var (
 	goarch    string
 	goos      string
@@ -17,6 +15,7 @@ var (
 )
 
 func ComputeVersionString() string {
+	version_string := ""
 
 	if version != "" {
 		version_string += fmt.Sprintf("version=%s ", version)

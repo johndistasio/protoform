@@ -12,7 +12,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/johndistasio/protoform/version"
+	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
 )
@@ -56,7 +56,7 @@ func parseParameters(cli []string) parameters {
 
 func init() {
 	flag.Usage = func() {
-		fmt.Print(`Usage: protoform [arguments] [template params] template
+		fmt.Print(`Usage: cauldron [arguments] [template params] template
 
 Arguments:
     -help:
@@ -78,7 +78,7 @@ Template:
     format.
 
 Example:
-    $ protoform color=red kind=sedan car.tmpl > car
+    $ cauldron color=red kind=sedan car.tmpl > car
 `)
 	}
 
@@ -103,7 +103,7 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Println(version.ComputeVersionString())
+		fmt.Printf("cauldron %s\n", version.ComputeVersionString())
 		os.Exit(0)
 	}
 

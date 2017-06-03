@@ -1,7 +1,7 @@
 # vi: set ft=make:
 
 VERSION = 0.6.0
-PACKAGE = github.com/johndistasio/protoform
+PACKAGE = github.com/johndistasio/cauldron
 
 GIT_REVISION = $(shell git rev-parse --short HEAD)
 GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
@@ -18,11 +18,11 @@ default: build
 
 archive:
 	mkdir -p build/
-	tar $(TARBALL_EXCLUDE) -czvf build/protoform-$(VERSION).tar.gz .
+	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(VERSION).tar.gz .
 
 build:
 	mkdir -p build/
-	go build -ldflags '$(GO_LDFLAGS)' -v -o build/protoform github.com/johndistasio/protoform
+	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron github.com/johndistasio/cauldron
 
 clean:
 	rm -rf build/
