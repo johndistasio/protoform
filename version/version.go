@@ -8,7 +8,6 @@ import (
 var version_string = "protoform "
 
 var (
-	built     string
 	goarch    string
 	goos      string
 	goversion string
@@ -41,10 +40,6 @@ func ComputeVersionString() string {
 
 	if goarch != "" {
 		version_string += fmt.Sprintf("goarch=%s ", goarch)
-	}
-
-	if built != "" {
-		version_string += fmt.Sprintf("built=%s ", built)
 	}
 
 	return strings.TrimSpace(version_string)
