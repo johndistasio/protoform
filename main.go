@@ -120,7 +120,7 @@ func main() {
 		}
 	}
 
-	templ, err := template.New(filepath.Base(params.TemplatePath)).Funcs(
+	tmpl, err := template.New(filepath.Base(params.TemplatePath)).Funcs(
 		sprig.TxtFuncMap()).ParseFiles(params.TemplatePath)
 
 	if err != nil {
@@ -136,7 +136,7 @@ func main() {
 		}
 
 		buf := new(bytes.Buffer)
-		err = templ.Execute(buf, params.Data)
+		err = tmpl.Execute(buf, params.Data)
 
 		if err != nil {
 			quit(err)
@@ -145,7 +145,7 @@ func main() {
 		_, err = file.WriteString(buf.String())
 
 	} else {
-		err = templ.Execute(os.Stdout, params.Data)
+		err = tmpl.Execute(os.Stdout, params.Data)
 	}
 
 	if err != nil {
