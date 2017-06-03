@@ -6,7 +6,7 @@
 #
 
 Vagrant.configure(2) do |config|
-  config.vm.define 'protoform-fedora25' do |guest|
+  config.vm.define 'cauldron-fedora25' do |guest|
     guest.vm.box = 'bento/fedora-25'
     guest.vm.hostname = 'fedora25'
     guest.vm.provision 'shell', inline: <<-SHELL

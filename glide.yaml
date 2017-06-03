@@ -1,4 +1,4 @@
-package: github.com/johndistasio/protoform
+package: github.com/johndistasio/cauldron
 import:
 - package: github.com/Masterminds/sprig
   version: 2.10.0
