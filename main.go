@@ -18,14 +18,14 @@ import (
 )
 
 type parameters struct {
-	Data     map[string]interface{}
-	Template string
+	Data         map[string]interface{}
+	TemplatePath string
 }
 
 func parseParameters(cli []string) parameters {
 	params := parameters{
-		Data:     make(map[string]interface{}),
-		Template: "",
+		Data:         make(map[string]interface{}),
+		TemplatePath: "",
 	}
 
 	for _, arg := range cli {
@@ -43,7 +43,7 @@ func parseParameters(cli []string) parameters {
 				params.Data[key] = complex
 			}
 		} else {
-			params.Template = arg
+			params.TemplatePath = arg
 		}
 	}
 
@@ -105,7 +105,7 @@ func main() {
 
 	params := parseParameters(flag.Args())
 
-	if len(params.Template) == 0 {
+	if len(params.TemplatePath) == 0 {
 		quit(errors.New("no template specified"))
 	}
 
@@ -118,15 +118,15 @@ func main() {
 		}
 	}
 
-	templ, err := template.New(filepath.Base(params.Template)).Funcs(
-		sprig.TxtFuncMap()).ParseFiles(params.Template)
+	templ, err := template.New(filepath.Base(params.TemplatePath)).Funcs(
+		sprig.TxtFuncMap()).ParseFiles(params.TemplatePath)
 
 	if err != nil {
 		quit(err)
 	}
 
 	if *inplacePtr {
-		file, err := os.OpenFile(params.Template, os.O_WRONLY|os.O_TRUNC, 0600)
+		file, err := os.OpenFile(params.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
 		defer file.Close()
 
 		if err != nil {
