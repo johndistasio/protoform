@@ -22,34 +22,6 @@ type parameters struct {
 	TemplatePath string
 }
 
-func parseParameters(cli []string) parameters {
-	params := parameters{
-		Data:         make(map[string]interface{}),
-		TemplatePath: "",
-	}
-
-	for _, arg := range cli {
-		if idx := strings.Index(arg, "="); idx > -1 {
-			key := arg[:idx]
-			val := arg[idx+1:]
-
-			var complex interface{}
-			err := json.Unmarshal([]byte(val), &complex)
-
-			if err != nil {
-				// If we can't parse the input as JSON, treat it as plain text.
-				params.Data[key] = val
-			} else {
-				params.Data[key] = complex
-			}
-		} else {
-			params.TemplatePath = arg
-		}
-	}
-
-	return params
-}
-
 func init() {
 	flag.Usage = func() {
 		fmt.Print(`Usage: cauldron [arguments] [template params] template
@@ -77,7 +49,34 @@ Example:
     $ cauldron color=red kind=sedan car.tmpl > car
 `)
 	}
+}
 
+func parseParameters(cli []string) parameters {
+	params := parameters{
+		Data:         make(map[string]interface{}),
+		TemplatePath: "",
+	}
+
+	for _, arg := range cli {
+		if idx := strings.Index(arg, "="); idx > -1 {
+			key := arg[:idx]
+			val := arg[idx+1:]
+
+			var complex interface{}
+			err := json.Unmarshal([]byte(val), &complex)
+
+			if err != nil {
+				// If we can't parse the input as JSON, treat it as plain text.
+				params.Data[key] = val
+			} else {
+				params.Data[key] = complex
+			}
+		} else {
+			params.TemplatePath = arg
+		}
+	}
+
+	return params
 }
 
 func quit(err error) {
