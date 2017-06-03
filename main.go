@@ -80,7 +80,7 @@ Example:
 
 }
 
-func exitOnError(err error) {
+func quit(err error) {
 	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
 }
@@ -106,7 +106,7 @@ func main() {
 	params := parseParameters(flag.Args())
 
 	if len(params.Template) == 0 {
-		exitOnError(errors.New("no template specified"))
+		quit(errors.New("no template specified"))
 	}
 
 	if len(*jsonPtr) != 0 {
@@ -114,7 +114,7 @@ func main() {
 		err = json.Unmarshal(jsondata, &params.Data)
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 	}
 
@@ -122,7 +122,7 @@ func main() {
 		sprig.TxtFuncMap()).ParseFiles(params.Template)
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
 	}
 
 	if *inplacePtr {
@@ -130,14 +130,14 @@ func main() {
 		defer file.Close()
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 
 		buf := new(bytes.Buffer)
 		err = templ.Execute(buf, params.Data)
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 
 		_, err = file.WriteString(buf.String())
@@ -147,6 +147,6 @@ func main() {
 	}
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
 	}
 }
