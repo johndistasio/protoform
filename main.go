@@ -22,15 +22,11 @@ type parameters struct {
 	Template string
 }
 
-func newParameters() parameters {
-	return parameters{
+func parseParameters(cli []string) parameters {
+	params := parameters{
 		Data:     make(map[string]interface{}),
 		Template: "",
 	}
-}
-
-func parseParameters(cli []string) parameters {
-	params := newParameters()
 
 	for _, arg := range cli {
 		if idx := strings.Index(arg, "="); idx > -1 {
