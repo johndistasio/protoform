@@ -2,23 +2,22 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/johndistasio/cauldron/provider"
+	"github.com/johndistasio/cauldron/provider/commandline"
+	"github.com/johndistasio/cauldron/provider/jsonfile"
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
 )
-
-type Parameters map[string]interface{}
 
 func init() {
 	flag.Usage = func() {
@@ -58,30 +57,7 @@ Example:
 	}
 }
 
-func parseParameters(cli []string) Parameters {
-	p := make(Parameters)
-
-	for _, arg := range cli {
-		if idx := strings.Index(arg, "="); idx > -1 {
-			key := arg[:idx]
-			val := arg[idx+1:]
-
-			var complex interface{}
-			err := json.Unmarshal([]byte(val), &complex)
-
-			if err != nil {
-				// If we can't parse the input as JSON, treat it as plain text.
-				p[key] = val
-			} else {
-				p[key] = complex
-			}
-		}
-	}
-
-	return p
-}
-
-func renderTemplate(path string, data Parameters) ([]byte, error) {
+func renderTemplate(path string, data provider.TemplateData) ([]byte, error) {
 	p := filepath.Base(path)
 	t := template.New(p)
 	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
@@ -130,18 +106,21 @@ func main() {
 		quit(errors.New("no template specified"))
 	}
 
-	parameters := parseParameters(flag.Args())
+	var data provider.TemplateData
+	var err error
 
-	if len(*jsonPtr) != 0 {
-		jsonData, err := ioutil.ReadFile(*jsonPtr)
-		err = json.Unmarshal(jsonData, &parameters)
-
-		if err != nil {
-			quit(err)
-		}
+	switch {
+	case len(*jsonPtr) != 0:
+		data, err = jsonfile.New(*jsonPtr).GetData()
+	default:
+		data, err = commandline.New(flag.Args()).GetData()
 	}
 
-	tmpl, err := renderTemplate(*templatePtr, parameters)
+	if err != nil {
+		quit(err)
+	}
+
+	tmpl, err := renderTemplate(*templatePtr, data)
 
 	if err != nil {
 		quit(err)
