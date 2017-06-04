@@ -24,5 +24,8 @@ build:
 	@mkdir -p build/
 	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron $(PACKAGE)
 
+test:
+	go test $(shell go list ./... | grep -v /vendor/)
+
 clean:
 	@rm -rf build/
