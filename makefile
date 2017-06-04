@@ -1,6 +1,6 @@
 # vi: set ft=make:
 
-VERSION = 0.8.0
+VERSION = 0.9.0
 PACKAGE = github.com/johndistasio/cauldron
 
 GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
@@ -13,8 +13,9 @@ GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GI
 
 TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
-.PHONY: build
-default: build test
+.PHONY: test build
+
+default: test build
 
 archive:
 	@mkdir -p build/

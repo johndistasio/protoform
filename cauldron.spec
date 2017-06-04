@@ -1,5 +1,5 @@
 Name:          cauldron
-Version:       0.8.0
+Version:       0.9.0
 Release:       1%{dist}
 Summary:       Cauldron - a simple provisioning tool.
 License:       MIT
@@ -26,6 +26,8 @@ install -p -m 0755 ./build/%{name} %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 
 %changelog
+* Sun Jun 4 2017 John DiStasio <jndistasio@gmail.com> - 0.9.0-1
+- Increment version to 0.9.0
 * Sat Jun 3 2017 John DiStasio <jndistasio@gmail.com> - 0.8.0-1
 - Increment version to 0.8.0
 * Sat Jun 3 2017 John DiStasio <jndistasio@gmail.com> - 0.7.1-1
