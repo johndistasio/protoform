@@ -1,22 +1,20 @@
-package commandline
+package data
 
 import (
 	"encoding/json"
 	"strings"
-
-	"github.com/johndistasio/cauldron/provider"
 )
 
 type CommandLine struct {
 	arguments []string
 }
 
-func New(args []string) *CommandLine {
+func NewCommandLine(args []string) *CommandLine {
 	return &CommandLine{args}
 }
 
-func (p *CommandLine) GetData() (provider.TemplateData, error) {
-	data := make(provider.TemplateData)
+func (p *CommandLine) GetData() (Data, error) {
+	data := make(Data)
 
 	for _, arg := range p.arguments {
 		if idx := strings.Index(arg, "="); idx > -1 {

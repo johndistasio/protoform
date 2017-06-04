@@ -11,9 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/johndistasio/cauldron/provider"
-	"github.com/johndistasio/cauldron/provider/commandline"
-	"github.com/johndistasio/cauldron/provider/jsonfile"
+	"github.com/johndistasio/cauldron/data"
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
@@ -57,16 +55,8 @@ Example:
 	}
 }
 
-func renderTemplate(path string, provider provider.Provider) ([]byte, error) {
-	p := filepath.Base(path)
-	t := template.New(p)
-	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	d, err := provider.GetData()
+func renderTemplate(t *template.Template, p data.Provider) ([]byte, error) {
+	d, err := p.GetData()
 
 	if err != nil {
 		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
@@ -77,6 +67,10 @@ func renderTemplate(path string, provider provider.Provider) ([]byte, error) {
 
 	err = t.Execute(b, d)
 
+	if err != nil {
+		return nil, err
+	}
+
 	return b.Bytes(), nil
 }
 
@@ -86,9 +80,9 @@ func quit(err error) {
 }
 
 func main() {
-	helpPtr := flag.Bool("help", false, "")
 	execPtr := flag.String("exec", "", "")
 	filePtr := flag.String("file", "", "")
+	helpPtr := flag.Bool("help", false, "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
 	templatePtr := flag.String("template", "", "")
@@ -106,32 +100,35 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(*templatePtr) == 0 {
+	if *templatePtr == "" {
 		quit(errors.New("no template specified"))
 	}
 
-	var provider provider.Provider
+	// Now we can do actual work
 
-	switch {
-	case len(*jsonPtr) != 0:
-		provider = jsonfile.New(*jsonPtr)
-	default:
-		provider = commandline.New(flag.Args())
-	}
-
-	tmpl, err := renderTemplate(*templatePtr, provider)
+	tmplName := filepath.Base(*templatePtr)
+	tmpl := template.New(tmplName)
+	tmpl, err := tmpl.Funcs(sprig.TxtFuncMap()).ParseFiles(*templatePtr)
 
 	if err != nil {
 		quit(err)
 	}
 
+	var prv data.Provider
 	var file *os.File
 	defer file.Close()
 
 	switch {
+	case *jsonPtr != "":
+		prv = data.NewJsonFile(*jsonPtr)
+	default:
+		prv = data.NewCommandLine(flag.Args())
+	}
+
+	switch {
 	case *inplacePtr:
 		file, err = os.OpenFile(*templatePtr, os.O_WRONLY|os.O_TRUNC, 0600)
-	case len(*filePtr) != 0:
+	case *filePtr != "":
 		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
 	default:
 		file = os.Stdout
@@ -141,13 +138,19 @@ func main() {
 		quit(err)
 	}
 
-	_, err = file.Write(tmpl)
+	rendered, err := renderTemplate(tmpl, prv)
 
 	if err != nil {
 		quit(err)
 	}
 
-	if len(*execPtr) != 0 {
+	_, err = file.Write(rendered)
+
+	if err != nil {
+		quit(err)
+	}
+
+	if *execPtr != "" {
 		cmd := strings.Split(*execPtr, " ")
 		err := exec.Command(cmd[0], cmd[1:]...).Run()
 

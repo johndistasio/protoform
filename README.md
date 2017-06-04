@@ -1,5 +1,7 @@
 # Cauldron
 
+[![Build Status](https://travis-ci.org/johndistasio/cauldron.svg?branch=master)](https://travis-ci.org/johndistasio/cauldron)
+
 A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images and handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
 
 Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-template).
