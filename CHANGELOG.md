@@ -6,6 +6,7 @@
 * Added a test for the command line parser
 * Added a test target to the makefile
 * General refactoring to make adding more tests later a bit easier
+* Automated build-on-push with TravisCI
 
 ## 0.7.1
 * Updated versions in makefile and specfile properly
