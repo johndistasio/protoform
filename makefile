@@ -22,7 +22,7 @@ archive:
 
 build:
 	@mkdir -p build/
-	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron github.com/johndistasio/cauldron
+	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron $(PACKAGE)
 
 clean:
 	@rm -rf build/
