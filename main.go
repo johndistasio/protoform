@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -57,27 +58,24 @@ Example:
 	}
 }
 
-func renderTemplate(path string, provider provider.Provider) ([]byte, error) {
-	p := filepath.Base(path)
-	t := template.New(p)
-	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
+func renderTemplate(t *template.Template, p provider.Provider, w io.Writer) error {
+	d, err := p.GetData()
 
 	if err != nil {
-		return nil, err
-	}
-
-	d, err := provider.GetData()
-
-	if err != nil {
-		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
-		return nil, err
+		return errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
 	}
 
 	b := new(bytes.Buffer)
 
 	err = t.Execute(b, d)
 
-	return b.Bytes(), nil
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(b.Bytes())
+
+	return err
 }
 
 func quit(err error) {
@@ -86,9 +84,9 @@ func quit(err error) {
 }
 
 func main() {
-	helpPtr := flag.Bool("help", false, "")
 	execPtr := flag.String("exec", "", "")
 	filePtr := flag.String("file", "", "")
+	helpPtr := flag.Bool("help", false, "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
 	templatePtr := flag.String("template", "", "")
@@ -110,6 +108,16 @@ func main() {
 		quit(errors.New("no template specified"))
 	}
 
+	// Now we can do actual work
+
+	tmplName := filepath.Base(*templatePtr)
+	tmpl := template.New(tmplName)
+	tmpl, err := tmpl.Funcs(sprig.TxtFuncMap()).ParseFiles(*templatePtr)
+
+	if err != nil {
+		quit(err)
+	}
+
 	var provider provider.Provider
 
 	switch {
@@ -117,12 +125,6 @@ func main() {
 		provider = jsonfile.New(*jsonPtr)
 	default:
 		provider = commandline.New(flag.Args())
-	}
-
-	tmpl, err := renderTemplate(*templatePtr, provider)
-
-	if err != nil {
-		quit(err)
 	}
 
 	var file *os.File
@@ -141,7 +143,7 @@ func main() {
 		quit(err)
 	}
 
-	_, err = file.Write(tmpl)
+	err = renderTemplate(tmpl, provider, io.Writer(file))
 
 	if err != nil {
 		quit(err)
