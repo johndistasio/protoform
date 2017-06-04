@@ -118,17 +118,16 @@ func main() {
 		quit(err)
 	}
 
-	var provider provider.Provider
+	var prv provider.Provider
+	var file *os.File
+	defer file.Close()
 
 	switch {
 	case *jsonPtr != "":
-		provider = jsonfile.New(*jsonPtr)
+		prv := jsonfile.New(*jsonPtr)
 	default:
-		provider = commandline.New(flag.Args())
+		prv := commandline.New(flag.Args())
 	}
-
-	var file *os.File
-	defer file.Close()
 
 	switch {
 	case *inplacePtr:
@@ -143,7 +142,7 @@ func main() {
 		quit(err)
 	}
 
-	err = renderTemplate(tmpl, provider, io.Writer(file))
+	err = renderTemplate(tmpl, prv, io.Writer(file))
 
 	if err != nil {
 		quit(err)
