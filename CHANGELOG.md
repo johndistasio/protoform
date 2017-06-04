@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.1
+* Updated versions in makefile and specfile properly
+
 ## 0.7.0
 * Changed template specification from position argument to -template flag
 * Extracted template data parsing into subpackage to make adding new data sources easier
