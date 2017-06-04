@@ -1,4 +1,4 @@
-package provider
+package data
 
 type Data map[string]interface{}
 

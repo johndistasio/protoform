@@ -11,7 +11,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/johndistasio/cauldron/provider"
+	"github.com/johndistasio/cauldron/data"
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
@@ -55,7 +55,7 @@ Example:
 	}
 }
 
-func renderTemplate(t *template.Template, p provider.Provider) ([]byte, error) {
+func renderTemplate(t *template.Template, p data.Provider) ([]byte, error) {
 	d, err := p.GetData()
 
 	if err != nil {
@@ -114,15 +114,15 @@ func main() {
 		quit(err)
 	}
 
-	var prv provider.Provider
+	var prv data.Provider
 	var file *os.File
 	defer file.Close()
 
 	switch {
 	case *jsonPtr != "":
-		prv = provider.NewJsonFile(*jsonPtr)
+		prv = data.NewJsonFile(*jsonPtr)
 	default:
-		prv = provider.NewCommandLine(flag.Args())
+		prv = data.NewCommandLine(flag.Args())
 	}
 
 	switch {
