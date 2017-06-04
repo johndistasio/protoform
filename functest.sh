@@ -9,6 +9,8 @@ set -o errexit
 
 CAULDRON=build/cauldron
 
+[[ -e ${CAULDRON} ]] || { echo "${CAULDRON} missing" 2>&1; exit 1; }
+
 diff <(${CAULDRON} -template examples/hello.tmpl name=John time=morning) \
     examples/rendered/hello.rendered \
     && echo "pass"
