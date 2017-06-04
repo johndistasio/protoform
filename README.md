@@ -10,7 +10,7 @@ Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-te
 $ cauldron [arguments] [template parameters]
 ```
 
-Here, `template` is the path to the desired Go template. By default, Cauldron will print the rendered template to standard out.
+By default, Cauldron will print the rendered template to standard out.
 
 ### Arguments
 
