@@ -1,22 +1,20 @@
-package jsonfile
+package provider
 
 import (
 	"encoding/json"
 	"io/ioutil"
-
-	"github.com/johndistasio/cauldron/provider"
 )
 
 type JsonFile struct {
 	path string
 }
 
-func New(path string) *JsonFile {
+func NewJsonFile(path string) *JsonFile {
 	return &JsonFile{path}
 }
 
-func (p *JsonFile) GetData() (provider.TemplateData, error) {
-	data := make(provider.TemplateData)
+func (p *JsonFile) GetData() (TemplateData, error) {
+	data := make(TemplateData)
 
 	jsonData, err := ioutil.ReadFile(p.path)
 

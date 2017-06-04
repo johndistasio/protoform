@@ -12,7 +12,6 @@ import (
 	"text/template"
 
 	"github.com/johndistasio/cauldron/provider"
-	"github.com/johndistasio/cauldron/provider/jsonfile"
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
@@ -121,7 +120,7 @@ func main() {
 
 	switch {
 	case *jsonPtr != "":
-		prv = jsonfile.New(*jsonPtr)
+		prv = provider.NewJsonFile(*jsonPtr)
 	default:
 		prv = provider.NewCommandLine(flag.Args())
 	}
