@@ -16,6 +16,10 @@ Here, `template` is the path to the desired Go template. By default, Cauldron wi
 
 Cauldron recognizes the following arguments:
 
+`-exec <cmd>`
+
+Run the specified command after successful template rendering. The command does not run in a shell so redirection, pipes, etc. will not work.
+
 `-file <path>`
 
 Write the rendered template to the specified path instead of standard output. Useful when executing Cauldron outside of a shell.
