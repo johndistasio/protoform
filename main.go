@@ -57,7 +57,7 @@ Example:
 	}
 }
 
-func renderTemplate(path string, data provider.TemplateData) ([]byte, error) {
+func renderTemplate(path string, provider provider.Provider) ([]byte, error) {
 	p := filepath.Base(path)
 	t := template.New(p)
 	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
@@ -66,12 +66,16 @@ func renderTemplate(path string, data provider.TemplateData) ([]byte, error) {
 		return nil, err
 	}
 
-	b := new(bytes.Buffer)
-	err = t.Execute(b, data)
+	d, err := provider.GetData()
 
 	if err != nil {
+		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
 		return nil, err
 	}
+
+	b := new(bytes.Buffer)
+
+	err = t.Execute(b, d)
 
 	return b.Bytes(), nil
 }
@@ -106,21 +110,16 @@ func main() {
 		quit(errors.New("no template specified"))
 	}
 
-	var data provider.TemplateData
-	var err error
+	var provider provider.Provider
 
 	switch {
 	case len(*jsonPtr) != 0:
-		data, err = jsonfile.New(*jsonPtr).GetData()
+		provider = jsonfile.New(*jsonPtr)
 	default:
-		data, err = commandline.New(flag.Args()).GetData()
+		provider = commandline.New(flag.Args())
 	}
 
-	if err != nil {
-		quit(err)
-	}
-
-	tmpl, err := renderTemplate(*templatePtr, data)
+	tmpl, err := renderTemplate(*templatePtr, provider)
 
 	if err != nil {
 		quit(err)
