@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -84,6 +85,25 @@ func parseParameters(cli []string) Configuration {
 	return c
 }
 
+func renderTemplate(c Configuration) ([]byte, error) {
+	p := filepath.Base(c.TemplatePath)
+	t := template.New(p)
+	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(c.TemplatePath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	err = t.Execute(buf, c.TemplateData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
 func quit(err error) {
 	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
@@ -122,33 +142,26 @@ func main() {
 		}
 	}
 
-	tmpl, err := template.New(filepath.Base(config.TemplatePath)).Funcs(
-		sprig.TxtFuncMap()).ParseFiles(config.TemplatePath)
+	tmpl, err := renderTemplate(config)
 
 	if err != nil {
 		quit(err)
 	}
 
+	var writer io.Writer
+
 	if *inplacePtr {
-		file, err := os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
-		defer file.Close()
+		writer, err := os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+		defer writer.Close()
 
 		if err != nil {
 			quit(err)
 		}
-
-		buf := new(bytes.Buffer)
-		err = tmpl.Execute(buf, config.TemplateData)
-
-		if err != nil {
-			quit(err)
-		}
-
-		_, err = file.WriteString(buf.String())
-
 	} else {
-		err = tmpl.Execute(os.Stdout, config.TemplateData)
+		writer = os.Stdout
 	}
+
+	_, err = writer.Write(tmpl)
 
 	if err != nil {
 		quit(err)
