@@ -1,7 +1,7 @@
 package provider
 
-type TemplateData map[string]interface{}
+type Data map[string]interface{}
 
 type Provider interface {
-	GetData() (TemplateData, error)
+	GetData() (Data, error)
 }
