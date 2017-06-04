@@ -35,7 +35,7 @@ Arguments:
         Render the template to the specified path instead of to standard output.
     -inplace:
         Render the template in-place (overwriting the template) instead of to
-        standard output.
+        standard output. Takes precedence over -file.
     -json:
         Read template data from the specified JSON file. Command-line template
         parameters are ignored.
@@ -151,20 +151,14 @@ func main() {
 	}
 
 	var file *os.File
+	defer file.Close()
 
-	if len(*filePtr) != 0 || *inplacePtr {
-		if *inplacePtr {
-			file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
-		} else {
-			file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
-		}
-
-		defer file.Close()
-
-		if err != nil {
-			quit(err)
-		}
-	} else {
+	switch {
+	case *inplacePtr:
+		file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+	case len(*filePtr) != 0:
+		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+	default:
 		file = os.Stdout
 	}
 
