@@ -3,7 +3,7 @@
 VERSION = 0.7.1
 PACKAGE = github.com/johndistasio/cauldron
 
-GIT_REVISION = $(shell git rev-parse --short HEAD)
+GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
 GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
 
 GO_ARCH    = $(shell go env GOARCH)
