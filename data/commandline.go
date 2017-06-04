@@ -1,4 +1,4 @@
-package provider
+package data
 
 import (
 	"encoding/json"
@@ -13,8 +13,8 @@ func NewCommandLine(args []string) *CommandLine {
 	return &CommandLine{args}
 }
 
-func (p *CommandLine) GetData() (TemplateData, error) {
-	data := make(TemplateData)
+func (p *CommandLine) GetData() (Data, error) {
+	data := make(Data)
 
 	for _, arg := range p.arguments {
 		if idx := strings.Index(arg, "="); idx > -1 {

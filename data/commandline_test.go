@@ -1,4 +1,4 @@
-package provider
+package data
 
 import (
 	"reflect"
@@ -10,7 +10,7 @@ var testMap = map[string]float64{"bar": 1}
 
 var testArray = []string{"a", "b", "c"}
 
-var tests = map[string]TemplateData{
+var tests = map[string]Data{
 	"foo=bar hello=world":                  {"foo": "bar", "hello": "world"},
 	" x foo=bar 12345 hello=world abc123 ": {"foo": "bar", "hello": "world"},
 	// TODO: Make these tests work

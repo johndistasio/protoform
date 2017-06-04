@@ -1,4 +1,4 @@
-package provider
+package data
 
 import (
 	"encoding/json"
@@ -13,8 +13,8 @@ func NewJsonFile(path string) *JsonFile {
 	return &JsonFile{path}
 }
 
-func (p *JsonFile) GetData() (TemplateData, error) {
-	data := make(TemplateData)
+func (p *JsonFile) GetData() (Data, error) {
+	data := make(Data)
 
 	jsonData, err := ioutil.ReadFile(p.path)
 
