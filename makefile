@@ -13,7 +13,8 @@ GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GI
 
 TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
-.PHONY: build
+.PHONY: test build
+
 default: test build
 
 archive:
