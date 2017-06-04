@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,8 +18,10 @@ import (
 	"github.com/Masterminds/sprig"
 )
 
-type parameters struct {
-	Data         map[string]interface{}
+type Parameters map[string]interface{}
+
+type Configuration struct {
+	TemplateData Parameters
 	TemplatePath string
 }
 
@@ -54,9 +57,9 @@ Example:
 	}
 }
 
-func parseParameters(cli []string) parameters {
-	params := parameters{
-		Data:         make(map[string]interface{}),
+func parseParameters(cli []string) Configuration {
+	c := Configuration{
+		TemplateData: make(Parameters),
 		TemplatePath: "",
 	}
 
@@ -70,16 +73,35 @@ func parseParameters(cli []string) parameters {
 
 			if err != nil {
 				// If we can't parse the input as JSON, treat it as plain text.
-				params.Data[key] = val
+				c.TemplateData[key] = val
 			} else {
-				params.Data[key] = complex
+				c.TemplateData[key] = complex
 			}
 		} else {
-			params.TemplatePath = arg
+			c.TemplatePath = arg
 		}
 	}
 
-	return params
+	return c
+}
+
+func renderTemplate(c Configuration) ([]byte, error) {
+	p := filepath.Base(c.TemplatePath)
+	t := template.New(p)
+	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(c.TemplatePath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	err = t.Execute(buf, c.TemplateData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
 func quit(err error) {
@@ -105,48 +127,41 @@ func main() {
 		os.Exit(0)
 	}
 
-	params := parseParameters(flag.Args())
+	config := parseParameters(flag.Args())
 
-	if len(params.TemplatePath) == 0 {
+	if len(config.TemplatePath) == 0 {
 		quit(errors.New("no template specified"))
 	}
 
 	if len(*jsonPtr) != 0 {
-		jsondata, err := ioutil.ReadFile(*jsonPtr)
-		err = json.Unmarshal(jsondata, &params.Data)
+		jsonData, err := ioutil.ReadFile(*jsonPtr)
+		err = json.Unmarshal(jsonData, &config.TemplateData)
 
 		if err != nil {
 			quit(err)
 		}
 	}
 
-	tmpl, err := template.New(filepath.Base(params.TemplatePath)).Funcs(
-		sprig.TxtFuncMap()).ParseFiles(params.TemplatePath)
+	tmpl, err := renderTemplate(config)
 
 	if err != nil {
 		quit(err)
 	}
 
+	var writer io.Writer
+
 	if *inplacePtr {
-		file, err := os.OpenFile(params.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
-		defer file.Close()
+		writer, err := os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+		defer writer.Close()
 
 		if err != nil {
 			quit(err)
 		}
-
-		buf := new(bytes.Buffer)
-		err = tmpl.Execute(buf, params.Data)
-
-		if err != nil {
-			quit(err)
-		}
-
-		_, err = file.WriteString(buf.String())
-
 	} else {
-		err = tmpl.Execute(os.Stdout, params.Data)
+		writer = os.Stdout
 	}
+
+	_, err = writer.Write(tmpl)
 
 	if err != nil {
 		quit(err)
