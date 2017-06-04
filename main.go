@@ -20,11 +20,6 @@ import (
 
 type Parameters map[string]interface{}
 
-type Configuration struct {
-	TemplateData Parameters
-	TemplatePath string
-}
-
 func init() {
 	flag.Usage = func() {
 		fmt.Print(`Usage: cauldron [arguments] [template parameters]
@@ -63,11 +58,8 @@ Example:
 	}
 }
 
-func parseParameters(cli []string) Configuration {
-	c := Configuration{
-		TemplateData: make(Parameters),
-		TemplatePath: "",
-	}
+func parseParameters(cli []string) Parameters {
+	p := make(Parameters)
 
 	for _, arg := range cli {
 		if idx := strings.Index(arg, "="); idx > -1 {
@@ -79,35 +71,33 @@ func parseParameters(cli []string) Configuration {
 
 			if err != nil {
 				// If we can't parse the input as JSON, treat it as plain text.
-				c.TemplateData[key] = val
+				p[key] = val
 			} else {
-				c.TemplateData[key] = complex
+				p[key] = complex
 			}
-		} else {
-			c.TemplatePath = arg
 		}
 	}
 
-	return c
+	return p
 }
 
-func renderTemplate(c Configuration) ([]byte, error) {
-	p := filepath.Base(c.TemplatePath)
+func renderTemplate(path string, data Parameters) ([]byte, error) {
+	p := filepath.Base(path)
 	t := template.New(p)
-	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(c.TemplatePath)
+	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	buf := new(bytes.Buffer)
-	err = t.Execute(buf, c.TemplateData)
+	b := new(bytes.Buffer)
+	err = t.Execute(b, data)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return buf.Bytes(), nil
+	return b.Bytes(), nil
 }
 
 func quit(err error) {
@@ -121,6 +111,7 @@ func main() {
 	filePtr := flag.String("file", "", "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
+	templatePtr := flag.String("template", "", "")
 	versionPtr := flag.Bool("version", false, "")
 	flag.Parse()
 
@@ -135,22 +126,22 @@ func main() {
 		os.Exit(0)
 	}
 
-	config := parseParameters(flag.Args())
-
-	if len(config.TemplatePath) == 0 {
+	if len(*templatePtr) == 0 {
 		quit(errors.New("no template specified"))
 	}
 
+	parameters := parseParameters(flag.Args())
+
 	if len(*jsonPtr) != 0 {
 		jsonData, err := ioutil.ReadFile(*jsonPtr)
-		err = json.Unmarshal(jsonData, &config.TemplateData)
+		err = json.Unmarshal(jsonData, &parameters)
 
 		if err != nil {
 			quit(err)
 		}
 	}
 
-	tmpl, err := renderTemplate(config)
+	tmpl, err := renderTemplate(*templatePtr, parameters)
 
 	if err != nil {
 		quit(err)
@@ -161,7 +152,7 @@ func main() {
 
 	switch {
 	case *inplacePtr:
-		file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+		file, err = os.OpenFile(*templatePtr, os.O_WRONLY|os.O_TRUNC, 0600)
 	case len(*filePtr) != 0:
 		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
 	default:
