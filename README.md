@@ -110,11 +110,10 @@ Ice Cream:
 {{ range $index, $flavor := .icecream -}}
     {{ add1 $index }}: {{ $flavor }}
 {{ end }}
-
 Slushes:
 {{ range $index, $flavor := .slushes -}}
     {{ add1 $index }}: {{ $flavor }}
-{{ end }}
+{{ end -}}
 $ cauldron -template examples/treats.tmpl -json examples/treats.json
 Summer Treats Menu:
 
@@ -122,7 +121,6 @@ Ice Cream:
 1: chocolate
 2: vanilla
 3: strawberry
-
 
 Slushes:
 1: grape
