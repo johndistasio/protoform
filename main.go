@@ -162,6 +162,10 @@ func main() {
 		file = os.Stdout
 	}
 
+	if err != nil {
+		quit(err)
+	}
+
 	_, err = file.Write(tmpl)
 
 	if err != nil {
