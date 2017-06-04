@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -58,11 +57,12 @@ Example:
 	}
 }
 
-func renderTemplate(t *template.Template, p provider.Provider, w io.Writer) error {
+func renderTemplate(t *template.Template, p provider.Provider) ([]byte, error) {
 	d, err := p.GetData()
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
+		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
+		return nil, err
 	}
 
 	b := new(bytes.Buffer)
@@ -70,12 +70,10 @@ func renderTemplate(t *template.Template, p provider.Provider, w io.Writer) erro
 	err = t.Execute(b, d)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = w.Write(b.Bytes())
-
-	return err
+	return b.Bytes(), nil
 }
 
 func quit(err error) {
@@ -124,9 +122,9 @@ func main() {
 
 	switch {
 	case *jsonPtr != "":
-		prv := jsonfile.New(*jsonPtr)
+		prv = jsonfile.New(*jsonPtr)
 	default:
-		prv := commandline.New(flag.Args())
+		prv = commandline.New(flag.Args())
 	}
 
 	switch {
@@ -142,7 +140,13 @@ func main() {
 		quit(err)
 	}
 
-	err = renderTemplate(tmpl, prv, io.Writer(file))
+	rendered, err := renderTemplate(tmpl, prv)
+
+	if err != nil {
+		quit(err)
+	}
+
+	_, err = file.Write(rendered)
 
 	if err != nil {
 		quit(err)
