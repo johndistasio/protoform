@@ -1,7 +1,7 @@
 # Changelog
 
 ## 0.9.0
-* TBD
+* Added a functional test script
 
 ## 0.8.0
 * All git errors are now ignored when building outside of a checkout
