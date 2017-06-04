@@ -1,14 +1,14 @@
-Name:          protoform
-Version:       0.5.0
+Name:          cauldron
+Version:       0.6.0
 Release:       1%{dist}
-Summary:       Protoform - a simple provisioning tool.
+Summary:       Cauldron - a simple provisioning tool.
 License:       MIT
-URL:           https://github.com/johndistasio/protoform
+URL:           https://github.com/johndistasio/cauldron
 Source0:       %{name}-%{version}.tar.gz
 BuildRequires: golang
 
 %description
-Protoform is a simple provisioning tool intended to set basic properties on a system via templated configuration files to facilitate a more powerful configuration management tool taking over. At it's core, Protoform is nothing more than a template rendering tool.
+Cauldron is a simple provisioning tool intended to set basic properties on a system via templated configuration files to facilitate a more powerful configuration management tool taking over.
 
 %define debug_package %{nil}
 
@@ -26,5 +26,7 @@ install -p -m 0755 ./build/%{name} %{buildroot}%{_bindir}/%{name}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Jun 3 2017 John DiStasio <jndistasio@gmail.com> - 0.6.0-1
+- Increment version to 0.6.0
 * Sat May 20 2017 John DiStasio <jndistasio@gmail.com> - 0.5.0-1
 - Initial version of the package

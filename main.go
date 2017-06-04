@@ -8,36 +8,65 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/johndistasio/cauldron/version"
+
 	"github.com/Masterminds/sprig"
 )
 
-var (
-	Built     string
-	GoArch    string
-	GoOs      string
-	GoVersion string
-	Name      string
-	Version   string
-)
+type Parameters map[string]interface{}
 
-type parameters struct {
-	Data     map[string]interface{}
-	Template string
+type Configuration struct {
+	TemplateData Parameters
+	TemplatePath string
 }
 
-func newParameters() parameters {
-	return parameters{
-		Data:     make(map[string]interface{}),
-		Template: "",
+func init() {
+	flag.Usage = func() {
+		fmt.Print(`Usage: cauldron [arguments] [template parameters] template
+
+Arguments:
+    -help:
+        Print this text and exit.
+    -exec:
+	    Run the specified command after successful template rendering. The
+        command does not run in a shell so redirection, pipes, etc. won't work.
+    -file:
+        Render the template to the specified path instead of to standard output.
+    -inplace:
+        Render the template in-place (overwriting the template) instead of to
+        standard output. Takes precedence over -file.
+    -json:
+        Read template data from the specified JSON file. Command-line template
+        parameters are ignored.
+    -version:
+        Print version and build details, then exit.
+
+Template Parameters:
+    Template parameters take the form of key=value and are used to populate the
+    template. The parameter 'color=red' would be referenced in the template as
+    {{ .color }}.
+
+Template:
+    The last argument that doesn't start with a "-" or include a "=" is used as
+    the path to the template. The template must use the normal Go text template
+    format.
+
+Example:
+    $ cauldron color=red kind=sedan car.tmpl > car
+`)
 	}
 }
 
-func parseParameters(cli []string) parameters {
-	params := newParameters()
+func parseParameters(cli []string) Configuration {
+	c := Configuration{
+		TemplateData: make(Parameters),
+		TemplatePath: "",
+	}
 
 	for _, arg := range cli {
 		if idx := strings.Index(arg, "="); idx > -1 {
@@ -49,55 +78,46 @@ func parseParameters(cli []string) parameters {
 
 			if err != nil {
 				// If we can't parse the input as JSON, treat it as plain text.
-				params.Data[key] = val
+				c.TemplateData[key] = val
 			} else {
-				params.Data[key] = complex
+				c.TemplateData[key] = complex
 			}
 		} else {
-			params.Template = arg
+			c.TemplatePath = arg
 		}
 	}
 
-	return params
+	return c
 }
 
-func init() {
-	flag.Usage = func() {
-		fmt.Print(`Usage: protoform [arguments] [template params] template
+func renderTemplate(c Configuration) ([]byte, error) {
+	p := filepath.Base(c.TemplatePath)
+	t := template.New(p)
+	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(c.TemplatePath)
 
-Arguments:
-    -help:
-        Print this text and exit.
-    -inplace:
-        Write in-place instead of to standard output.
-    -json:
-        Read template data from the specified JSON file. Command-line parameters
-		are ignored.
-    -version:
-        Print version and build details, then exit.
-
-Template Parameters:
-    Template arguments take the form of key=value and are used in the template.
-
-Template:
-    The last argument that doesn't start with a "-" or include a "=" is used as
-    the path to the template. The template must use the normal Go text template
-    format.
-
-Example:
-    $ protoform color=red kind=sedan car.tmpl > car
-`)
+	if err != nil {
+		return nil, err
 	}
 
+	buf := new(bytes.Buffer)
+	err = t.Execute(buf, c.TemplateData)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
-func exitOnError(err error) {
+func quit(err error) {
 	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
 }
 
 func main() {
 	helpPtr := flag.Bool("help", false, "")
+	execPtr := flag.String("exec", "", "")
+	filePtr := flag.String("file", "", "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
 	versionPtr := flag.Bool("version", false, "")
@@ -110,55 +130,60 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Fprintf(os.Stdout, "%s version=%s go=%s os=%s arch=%s built=%s\n",
-			Name, Version, GoVersion, GoOs, GoArch, Built)
+		fmt.Printf("cauldron %s\n", version.ComputeVersionString())
 		os.Exit(0)
 	}
 
-	params := parseParameters(flag.Args())
+	config := parseParameters(flag.Args())
 
-	if len(params.Template) == 0 {
-		exitOnError(errors.New("no template specified"))
+	if len(config.TemplatePath) == 0 {
+		quit(errors.New("no template specified"))
 	}
 
 	if len(*jsonPtr) != 0 {
-		jsondata, err := ioutil.ReadFile(*jsonPtr)
-		err = json.Unmarshal(jsondata, &params.Data)
+		jsonData, err := ioutil.ReadFile(*jsonPtr)
+		err = json.Unmarshal(jsonData, &config.TemplateData)
 
 		if err != nil {
-			exitOnError(err)
+			quit(err)
 		}
 	}
 
-	templ, err := template.New(filepath.Base(params.Template)).Funcs(
-		sprig.TxtFuncMap()).ParseFiles(params.Template)
+	tmpl, err := renderTemplate(config)
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
 	}
 
-	if *inplacePtr {
-		file, err := os.OpenFile(params.Template, os.O_WRONLY|os.O_TRUNC, 0600)
-		defer file.Close()
+	var file *os.File
+	defer file.Close()
 
-		if err != nil {
-			exitOnError(err)
-		}
-
-		buf := new(bytes.Buffer)
-		err = templ.Execute(buf, params.Data)
-
-		if err != nil {
-			exitOnError(err)
-		}
-
-		_, err = file.WriteString(buf.String())
-
-	} else {
-		err = templ.Execute(os.Stdout, params.Data)
+	switch {
+	case *inplacePtr:
+		file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+	case len(*filePtr) != 0:
+		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+	default:
+		file = os.Stdout
 	}
 
 	if err != nil {
-		exitOnError(err)
+		quit(err)
+	}
+
+	_, err = file.Write(tmpl)
+
+	if err != nil {
+		quit(err)
+	}
+
+	if len(*execPtr) != 0 {
+		cmd := strings.Split(*execPtr, " ")
+		err := exec.Command(cmd[0], cmd[1:]...).Run()
+
+		if err != nil {
+			err = errors.New(fmt.Sprintf("failed to exec: %s", err.Error()))
+			quit(err)
+		}
 	}
 }

@@ -1,28 +1,36 @@
-# Protoform
+# Cauldron
 
-A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images and handling this kind of task now.
+A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images and handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
 
-Protoform uses Go's standard templating package and accepts JSON-formatted strings for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
+Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-template).
 
 ## Usage
 
 ```
-$ protoform [arguments] [template parameters] template
+$ cauldron [arguments] [template parameters] template
 ```
 
-Here, `template` is the path to the desired Go template. By default, Protoform will print the rendered template to standard out.
+Here, `template` is the path to the desired Go template. By default, Cauldron will print the rendered template to standard out.
 
 ### Arguments
 
-Protoform recognizes the following arguments:
+Cauldron recognizes the following arguments:
+
+`-exec <cmd>`
+
+Run the specified command after successful template rendering. The command does not run in a shell so redirection, pipes, etc. will not work.
+
+`-file <path>`
+
+Write the rendered template to the specified path instead of standard output. Useful when executing Cauldron outside of a shell.
 
 `-inplace`
 
-Write the rendered template in-place, overwriting the template file.
+Write the rendered template in-place instead of standard output, overwriting the template file.
 
-`-json`
+`-json <path>`
 
-Read template data from the specified file. Template paratmeters provided on the command line are ignored.
+Read template data from the specified path. Template parameters provided on the command line are ignored.
 
 `-help`
 
@@ -47,9 +55,9 @@ Given `examples/hello.tmpl`:
 Hello there, {{.name}}! Good {{.time}}!
 ```
 
-We can use Protoform to write a friendly message to admins that like to sleep in:
+We can use Cauldron to write a friendly message to admins that like to sleep in:
 ```
-$ protoform name=sleepyhead time=morning examples/hello.tmpl > /etc/motd
+$ cauldron name=sleepyhead time=morning examples/hello.tmpl > /etc/motd
 $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
@@ -67,9 +75,9 @@ option {{ $key }}{{ with $value }}{{ printf ":%s" . }}{{end}}
 {{ end -}}
 ```
 
-By using JSON-formatted strings, we can pass arrays and maps to Protoform:
+By using JSON-formatted strings, we can pass arrays and maps to Cauldron:
 ```
-$ protoform nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' examples/resolv.conf.tmpl > /etc/resolv.conf
+$ cauldron nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' examples/resolv.conf.tmpl > /etc/resolv.conf
 $ cat /etc/resolv.conf
 nameserver 10.20.30.40
 nameserver 8.8.8.8
@@ -79,7 +87,7 @@ option rotate
 option timeout:5
 ```
 
-Protoform can also read data from a JSON file with the `-json` flag:
+Cauldron can also read data from a JSON file with the `-json` flag:
 
 ```
 $ cat examples/treats.json
@@ -99,7 +107,7 @@ Slushes:
 {{ range $index, $flavor := .slushes -}}
     {{ add1 $index }}: {{ $flavor }}
 {{ end }}
-$ protoform -json examples/treats.json examples/treats.tmpl
+$ cauldron -json examples/treats.json examples/treats.tmpl
 Summer Treats Menu:
 
 Ice Cream:
@@ -116,4 +124,4 @@ Slushes:
 
 ## Building and Packaging
 
-Protoform can be built or prepared for packaging with `make`. A spec file is included for RPM builds.
+Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds.
