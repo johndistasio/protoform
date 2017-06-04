@@ -1,28 +1,17 @@
 package data
 
-import (
-	"encoding/json"
-	"io/ioutil"
-)
+import "os"
 
 type JsonFile struct {
-	path string
+	*Json
 }
 
-func NewJsonFile(path string) *JsonFile {
-	return &JsonFile{path}
-}
-
-func (p *JsonFile) GetData() (Data, error) {
-	data := make(Data)
-
-	jsonData, err := ioutil.ReadFile(p.path)
+func NewJsonFile(path string) (*JsonFile, error) {
+	file, err := os.OpenFile(path, os.O_RDONLY, 0600)
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = json.Unmarshal(jsonData, &data)
-
-	return data, err
+	return &JsonFile{&Json{file}}, nil
 }
