@@ -14,7 +14,7 @@ GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GI
 TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
 .PHONY: build
-default: build test
+default: test build
 
 archive:
 	@mkdir -p build/
