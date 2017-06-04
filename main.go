@@ -6,7 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -32,6 +31,8 @@ func init() {
 Arguments:
     -help:
         Print this text and exit.
+    -file:
+        Render the template to the specified path instead of to standard output.
     -inplace:
         Render the template in-place (overwriting the template) instead of to
         standard output.
@@ -111,6 +112,7 @@ func quit(err error) {
 
 func main() {
 	helpPtr := flag.Bool("help", false, "")
+	filePtr := flag.String("file", "", "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
 	versionPtr := flag.Bool("version", false, "")
@@ -148,20 +150,25 @@ func main() {
 		quit(err)
 	}
 
-	var writer io.Writer
+	var file *os.File
 
-	if *inplacePtr {
-		writer, err := os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
-		defer writer.Close()
+	if len(*filePtr) != 0 || *inplacePtr {
+		if *inplacePtr {
+			file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+		} else {
+			file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+		}
+
+		defer file.Close()
 
 		if err != nil {
 			quit(err)
 		}
 	} else {
-		writer = os.Stdout
+		file = os.Stdout
 	}
 
-	_, err = writer.Write(tmpl)
+	_, err = file.Write(tmpl)
 
 	if err != nil {
 		quit(err)

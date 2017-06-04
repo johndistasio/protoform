@@ -6,6 +6,7 @@
   * Extracted version string handling into subpackage
   * Included Git details when built from checkout to make development easier
   * Stopped including build time in binary, for more consistent builds
+* Added the -file flag for rendering to a specified file.
 
 ## 0.5.0
 * Template data can now be read from JSON files with the -json flag. Template data provided on the command line is ignored when using this flag.

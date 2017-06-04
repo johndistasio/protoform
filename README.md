@@ -16,13 +16,17 @@ Here, `template` is the path to the desired Go template. By default, Cauldron wi
 
 Cauldron recognizes the following arguments:
 
+`-file <path>`
+
+Write the rendered template to the specified path instead of standard output. Useful when executing Cauldron outside of a shell.
+
 `-inplace`
 
-Write the rendered template in-place, overwriting the template file.
+Write the rendered template in-place instead of standard output, overwriting the template file.
 
-`-json`
+`-json <path>`
 
-Read template data from the specified file. Template paratmeters provided on the command line are ignored.
+Read template data from the specified path. Template parameters provided on the command line are ignored.
 
 `-help`
 
