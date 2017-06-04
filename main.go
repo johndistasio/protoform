@@ -27,7 +27,7 @@ type Configuration struct {
 
 func init() {
 	flag.Usage = func() {
-		fmt.Print(`Usage: cauldron [arguments] [template parameters] template
+		fmt.Print(`Usage: cauldron [arguments] [template parameters]
 
 Arguments:
     -help:
@@ -43,6 +43,8 @@ Arguments:
     -json:
         Read template data from the specified JSON file. Command-line template
         parameters are ignored.
+    -template:
+        Path to the template to be rendered. This argument is required.
     -version:
         Print version and build details, then exit.
 
@@ -52,12 +54,11 @@ Template Parameters:
     {{ .color }}.
 
 Template:
-    The last argument that doesn't start with a "-" or include a "=" is used as
-    the path to the template. The template must use the normal Go text template
-    format.
+    A template file must specified with the -template flag. The template must
+	use the normal Go text template format.
 
 Example:
-    $ cauldron color=red kind=sedan car.tmpl > car
+    $ cauldron -template car.tmpl color=red kind=sedan > car
 `)
 	}
 }
