@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.0
+* TBD
+
 ## 0.7.1
 * Updated versions in makefile and specfile properly
 
