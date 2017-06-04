@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -31,6 +32,9 @@ func init() {
 Arguments:
     -help:
         Print this text and exit.
+    -exec:
+	    Run the specified command after successful template rendering. The
+        command does not run in a shell so redirection, pipes, etc. won't work.
     -file:
         Render the template to the specified path instead of to standard output.
     -inplace:
@@ -112,6 +116,7 @@ func quit(err error) {
 
 func main() {
 	helpPtr := flag.Bool("help", false, "")
+	execPtr := flag.String("exec", "", "")
 	filePtr := flag.String("file", "", "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
@@ -170,5 +175,15 @@ func main() {
 
 	if err != nil {
 		quit(err)
+	}
+
+	if len(*execPtr) != 0 {
+		cmd := strings.Split(*execPtr, " ")
+		err := exec.Command(cmd[0], cmd[1:]...).Run()
+
+		if err != nil {
+			err = errors.New(fmt.Sprintf("failed to exec: %s", err.Error()))
+			quit(err)
+		}
 	}
 }
