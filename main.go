@@ -106,14 +106,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(*templatePtr) == 0 {
+	if *templatePtr == "" {
 		quit(errors.New("no template specified"))
 	}
 
 	var provider provider.Provider
 
 	switch {
-	case len(*jsonPtr) != 0:
+	case *jsonPtr != "":
 		provider = jsonfile.New(*jsonPtr)
 	default:
 		provider = commandline.New(flag.Args())
@@ -131,7 +131,7 @@ func main() {
 	switch {
 	case *inplacePtr:
 		file, err = os.OpenFile(*templatePtr, os.O_WRONLY|os.O_TRUNC, 0600)
-	case len(*filePtr) != 0:
+	case *filePtr != "":
 		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
 	default:
 		file = os.Stdout
@@ -147,7 +147,7 @@ func main() {
 		quit(err)
 	}
 
-	if len(*execPtr) != 0 {
+	if *execPtr != "" {
 		cmd := strings.Split(*execPtr, " ")
 		err := exec.Command(cmd[0], cmd[1:]...).Run()
 
