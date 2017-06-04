@@ -1,18 +1,16 @@
-package commandline
+package provider
 
 import (
 	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/johndistasio/cauldron/provider"
 )
 
 var testMap = map[string]float64{"bar": 1}
 
 var testArray = []string{"a", "b", "c"}
 
-var tests = map[string]provider.TemplateData{
+var tests = map[string]TemplateData{
 	"foo=bar hello=world":                  {"foo": "bar", "hello": "world"},
 	" x foo=bar 12345 hello=world abc123 ": {"foo": "bar", "hello": "world"},
 	// TODO: Make these tests work
@@ -23,7 +21,7 @@ var tests = map[string]provider.TemplateData{
 
 func TestCommandLineParsing(t *testing.T) {
 	for cli, expected := range tests {
-		actual, err := New(strings.Split(cli, " ")).GetData()
+		actual, err := NewCommandLine(strings.Split(cli, " ")).GetData()
 
 		if err != nil || !reflect.DeepEqual(actual, expected) {
 			t.Errorf("Failed parsing \"%s\" expected %s got %s", cli, expected, actual)
