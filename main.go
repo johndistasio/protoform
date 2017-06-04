@@ -2,32 +2,26 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/johndistasio/cauldron/provider"
+	"github.com/johndistasio/cauldron/provider/commandline"
+	"github.com/johndistasio/cauldron/provider/jsonfile"
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
 )
 
-type Parameters map[string]interface{}
-
-type Configuration struct {
-	TemplateData Parameters
-	TemplatePath string
-}
-
 func init() {
 	flag.Usage = func() {
-		fmt.Print(`Usage: cauldron [arguments] [template parameters] template
+		fmt.Print(`Usage: cauldron [arguments] [template parameters]
 
 Arguments:
     -help:
@@ -43,6 +37,8 @@ Arguments:
     -json:
         Read template data from the specified JSON file. Command-line template
         parameters are ignored.
+    -template:
+        Path to the template to be rendered. This argument is required.
     -version:
         Print version and build details, then exit.
 
@@ -52,61 +48,36 @@ Template Parameters:
     {{ .color }}.
 
 Template:
-    The last argument that doesn't start with a "-" or include a "=" is used as
-    the path to the template. The template must use the normal Go text template
-    format.
+    A template file must specified with the -template flag. The template must
+	use the normal Go text template format.
 
 Example:
-    $ cauldron color=red kind=sedan car.tmpl > car
+    $ cauldron -template car.tmpl color=red kind=sedan > car
 `)
 	}
 }
 
-func parseParameters(cli []string) Configuration {
-	c := Configuration{
-		TemplateData: make(Parameters),
-		TemplatePath: "",
-	}
-
-	for _, arg := range cli {
-		if idx := strings.Index(arg, "="); idx > -1 {
-			key := arg[:idx]
-			val := arg[idx+1:]
-
-			var complex interface{}
-			err := json.Unmarshal([]byte(val), &complex)
-
-			if err != nil {
-				// If we can't parse the input as JSON, treat it as plain text.
-				c.TemplateData[key] = val
-			} else {
-				c.TemplateData[key] = complex
-			}
-		} else {
-			c.TemplatePath = arg
-		}
-	}
-
-	return c
-}
-
-func renderTemplate(c Configuration) ([]byte, error) {
-	p := filepath.Base(c.TemplatePath)
+func renderTemplate(path string, provider provider.Provider) ([]byte, error) {
+	p := filepath.Base(path)
 	t := template.New(p)
-	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(c.TemplatePath)
+	t, err := t.Funcs(sprig.TxtFuncMap()).ParseFiles(path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	buf := new(bytes.Buffer)
-	err = t.Execute(buf, c.TemplateData)
+	d, err := provider.GetData()
 
 	if err != nil {
+		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
 		return nil, err
 	}
 
-	return buf.Bytes(), nil
+	b := new(bytes.Buffer)
+
+	err = t.Execute(b, d)
+
+	return b.Bytes(), nil
 }
 
 func quit(err error) {
@@ -120,6 +91,7 @@ func main() {
 	filePtr := flag.String("file", "", "")
 	inplacePtr := flag.Bool("inplace", false, "")
 	jsonPtr := flag.String("json", "", "")
+	templatePtr := flag.String("template", "", "")
 	versionPtr := flag.Bool("version", false, "")
 	flag.Parse()
 
@@ -134,22 +106,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	config := parseParameters(flag.Args())
-
-	if len(config.TemplatePath) == 0 {
+	if len(*templatePtr) == 0 {
 		quit(errors.New("no template specified"))
 	}
 
-	if len(*jsonPtr) != 0 {
-		jsonData, err := ioutil.ReadFile(*jsonPtr)
-		err = json.Unmarshal(jsonData, &config.TemplateData)
+	var provider provider.Provider
 
-		if err != nil {
-			quit(err)
-		}
+	switch {
+	case len(*jsonPtr) != 0:
+		provider = jsonfile.New(*jsonPtr)
+	default:
+		provider = commandline.New(flag.Args())
 	}
 
-	tmpl, err := renderTemplate(config)
+	tmpl, err := renderTemplate(*templatePtr, provider)
 
 	if err != nil {
 		quit(err)
@@ -160,7 +130,7 @@ func main() {
 
 	switch {
 	case *inplacePtr:
-		file, err = os.OpenFile(config.TemplatePath, os.O_WRONLY|os.O_TRUNC, 0600)
+		file, err = os.OpenFile(*templatePtr, os.O_WRONLY|os.O_TRUNC, 0600)
 	case len(*filePtr) != 0:
 		file, err = os.OpenFile(*filePtr, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
 	default:

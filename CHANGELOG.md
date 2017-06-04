@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+* Changed template specification from position argument to -template flag
+* Extracted template data parsing into subpackage to make adding new data sources easier
+
 ## 0.6.0
 * Rename project to cauldron
 * Improved version string handling:

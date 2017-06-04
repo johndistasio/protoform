@@ -4,8 +4,7 @@ Ice Cream:
 {{ range $index, $flavor := .icecream -}}
     {{ add1 $index }}: {{ $flavor }}
 {{ end }}
-
 Slushes:
 {{ range $index, $flavor := .slushes -}}
     {{ add1 $index }}: {{ $flavor }}
-{{ end }}
+{{ end -}}

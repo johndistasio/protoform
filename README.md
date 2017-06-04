@@ -7,10 +7,10 @@ Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-te
 ## Usage
 
 ```
-$ cauldron [arguments] [template parameters] template
+$ cauldron [arguments] [template parameters]
 ```
 
-Here, `template` is the path to the desired Go template. By default, Cauldron will print the rendered template to standard out.
+By default, Cauldron will print the rendered template to standard out.
 
 ### Arguments
 
@@ -36,6 +36,10 @@ Read template data from the specified path. Template parameters provided on the 
 
 Prints a help message then exits.
 
+`-template <path>`
+
+Path to the template to be rendered. This argument is required.
+
 `-version`
 
  Prints version and build information, then exits.
@@ -51,18 +55,21 @@ More complex data can be provided with JSON-formatted strings, i.e. `animals='["
 The files shown here are all in the `examples/` directory.
 
 Given `examples/hello.tmpl`:
+
 ```
 Hello there, {{.name}}! Good {{.time}}!
 ```
 
 We can use Cauldron to write a friendly message to admins that like to sleep in:
+
 ```
-$ cauldron name=sleepyhead time=morning examples/hello.tmpl > /etc/motd
+$ cauldron -template examples/hello.tmpl name=sleepyhead time=morning > /etc/motd
 $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
 
 Something more complex: configuring resolv.conf. Using `examples/resolv.conf.tmpl`:
+
 ```
 {{ range .nameservers -}}
 nameserver {{ . }}
@@ -76,8 +83,9 @@ option {{ $key }}{{ with $value }}{{ printf ":%s" . }}{{end}}
 ```
 
 By using JSON-formatted strings, we can pass arrays and maps to Cauldron:
+
 ```
-$ cauldron nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' examples/resolv.conf.tmpl > /etc/resolv.conf
+$ cauldron -template examples/resolv.conf.tmpl nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' > /etc/resolv.conf
 $ cat /etc/resolv.conf
 nameserver 10.20.30.40
 nameserver 8.8.8.8
@@ -102,19 +110,17 @@ Ice Cream:
 {{ range $index, $flavor := .icecream -}}
     {{ add1 $index }}: {{ $flavor }}
 {{ end }}
-
 Slushes:
 {{ range $index, $flavor := .slushes -}}
     {{ add1 $index }}: {{ $flavor }}
-{{ end }}
-$ cauldron -json examples/treats.json examples/treats.tmpl
+{{ end -}}
+$ cauldron -template examples/treats.tmpl -json examples/treats.json
 Summer Treats Menu:
 
 Ice Cream:
 1: chocolate
 2: vanilla
 3: strawberry
-
 
 Slushes:
 1: grape
