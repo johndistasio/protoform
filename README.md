@@ -142,7 +142,9 @@ Slushes:
 
 ## Building and Packaging
 
-Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds. The default `make` target will run the tests and build a binary for the current platform in `build/`.
+Cauldron can be built or prepared for packaging with `make`. The default `make` target will run the tests and build a binary for the current platform in `build/`.
+
+A spec file is included for RPM builds.
 
 ## Testing
 
