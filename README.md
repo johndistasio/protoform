@@ -142,20 +142,8 @@ Slushes:
 
 ## Building and Packaging
 
-Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds. The default `make` target will run the tests and build a binary for the current platform in `build/`. Available targets are:
+Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds. The default `make` target will run the tests and build a binary for the current platform in `build/`.
 
-`archive`
+## Testing
 
-Packs up the source tree into a tarball in `build/`.
-
-`build`
-
-Builds the current working tree into a binary in `build/`.
-
-`clean`
-
-Deletes all build artifacts.
-
-`test`
-
-Runs all Go tests.
+Go tests can be run with `make test`. A functional test script, `functest.sh`, is available. This uses some pre-rendered templates in `examples/` and a binary from `build/` (you'll need to run `make build` first) to test Cauldron like a user might.
