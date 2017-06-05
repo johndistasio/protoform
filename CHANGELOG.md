@@ -1,7 +1,8 @@
 # Changelog
 
 ## 0.10.0
-* TBD
+* Implemented a generic JSON reader provider for file or network providers to use
+* Expanded functional test script
 
 ## 0.9.0
 * Added a functional test script
