@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/johndistasio/cauldron.svg?branch=master)](https://travis-ci.org/johndistasio/cauldron)
 
-A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images and handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
+A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images for handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings or files for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
 
 Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-template).
 
@@ -48,9 +48,9 @@ Path to the template to be rendered. This argument is required.
 
 ### Template Parameters
 
-Template parameters are key-value pairs in the form of `key=value` that are munged into an object fed to the template. A parameter like `kittens=fuzzy` would be accessible in the template with `{{ .kittens }}`.
+Command-line template parameters are key-value pairs in the form of `key=value` that are munged into an object fed to the template. A parameter like `kittens=fuzzy` would be accessible in the template with `{{ .kittens }}`.
 
-More complex data can be provided with JSON-formatted strings, i.e. `animals='["cow", "sheep", "duck"]'`.
+More complex data can be provided with JSON-formatted strings, e.g. `animals='["cow", "sheep", "duck"]'`.
 
 ## Examples
 
@@ -70,7 +70,9 @@ $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
 
-Something more complex: configuring resolv.conf. Using `examples/resolv.conf.tmpl`:
+### JSON
+
+We can use JSON-formatted data to configure something more complex like `resolv.conf`. Using `examples/resolv.conf.tmpl`:
 
 ```
 {{ range .nameservers -}}
@@ -97,15 +99,18 @@ option rotate
 option timeout:5
 ```
 
-Cauldron can also read data from a JSON file with the `-json` flag:
+Cauldron can also read data from a JSON file with the `-json` flag. Using `examples/treats.json`:
 
 ```
-$ cat examples/treats.json
 {
   "icecream": [ "chocolate", "vanilla", "strawberry" ],
   "slushes": [ "grape", "watermelon", "strawberry" ]
 }
-$ cat examples/treats.tmpl
+```
+
+We can write a simple template like `examples/treats.tmpl` to list all of these things:
+
+```
 Summer Treats Menu:
 
 Ice Cream:
@@ -116,6 +121,11 @@ Slushes:
 {{ range $index, $flavor := .slushes -}}
     {{ add1 $index }}: {{ $flavor }}
 {{ end -}}
+```
+
+Finally, we render the template:
+
+```
 $ cauldron -template examples/treats.tmpl -json examples/treats.json
 Summer Treats Menu:
 
@@ -132,4 +142,20 @@ Slushes:
 
 ## Building and Packaging
 
-Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds.
+Cauldron can be built or prepared for packaging with `make`. A spec file is included for RPM builds. The default `make` target will run the tests and build a binary for the current platform in `build/`. Available targets are:
+
+`archive`
+
+Packs up the source tree into a tarball in `build/`.
+
+`build`
+
+Builds the current working tree into a binary in `build/`.
+
+`clean`
+
+Deletes all build artifacts.
+
+`test`
+
+Runs all Go tests.
