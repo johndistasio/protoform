@@ -17,11 +17,14 @@ RED='\033[1;31m'
 GREEN='\033[1;32m'
 RESET='\033[0m'
 
+EXIT_CODE=0
+
 result() {
     if [[ "${?}" -eq 0 ]]; then
         printf "${GREEN}pass${RESET}\n"
     else
         printf "${RED}fail${RESET}\n"
+        EXIT_CODE=1
     fi
 }
 
@@ -47,3 +50,5 @@ echo "Render to File:"
 ${CAULDRON} -template examples/hello.tmpl -file "${TMPFILE}" name=John time=morning \
  && diff "${TMPFILE}" examples/rendered/hello.rendered
 result $?
+
+exit $EXIT_CODE
