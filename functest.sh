@@ -7,7 +7,7 @@
 #
 CAULDRON=build/cauldron
 
-[[ -e ${CAULDRON} ]] || { echo "${CAULDRON} missing" 2>&1; exit 1; }
+[[ -e ${CAULDRON} ]] || { echo "${CAULDRON} missing, try 'make build' first" 2>&1; exit 1; }
 
 TMPFILE=$(mktemp)
 
