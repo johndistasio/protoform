@@ -13,9 +13,9 @@ GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GI
 
 TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
-.PHONY: test build
+.PHONY: test build smoketest
 
-default: test build
+default: test build smoketest
 
 archive:
 	@mkdir -p build/
@@ -27,6 +27,9 @@ build:
 
 test:
 	go test -v $(shell go list ./... | grep -v /vendor/)
+
+smoketest:
+	bash ./smoketest.sh
 
 clean:
 	@rm -rf build/
