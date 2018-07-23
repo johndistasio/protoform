@@ -15,7 +15,7 @@ TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
 .PHONY: test build smoketest
 
-default: test build smoketest
+default: clean test build smoketest
 
 archive:
 	@mkdir -p build/

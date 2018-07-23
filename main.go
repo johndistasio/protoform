@@ -120,7 +120,7 @@ func main() {
 
 	switch {
 	case *jsonPtr != "":
-		src, err = data.NewJsonFile(*jsonPtr)
+		src = data.NewJsonFile(*jsonPtr)
 	default:
 		src = data.NewCommandLine(flag.Args())
 	}
