@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# A functional test script for cauldron.
+# A smoke test script for cauldron.
 #
 # @author John DiStasio <jndistasio@gmail.com>
 # @copyright Copyright (c) 2017 John DiStasio
