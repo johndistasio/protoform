@@ -55,8 +55,8 @@ Example:
 	}
 }
 
-func renderTemplate(t *template.Template, p data.Provider) ([]byte, error) {
-	d, err := p.GetData()
+func renderTemplate(t *template.Template, s data.Source) ([]byte, error) {
+	d, err := s.GetData()
 
 	if err != nil {
 		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
@@ -114,15 +114,15 @@ func main() {
 		quit(err)
 	}
 
-	var prv data.Provider
+	var src data.Source
 	var file *os.File
 	defer file.Close()
 
 	switch {
 	case *jsonPtr != "":
-		prv, err = data.NewJsonFile(*jsonPtr)
+		src, err = data.NewJsonFile(*jsonPtr)
 	default:
-		prv = data.NewCommandLine(flag.Args())
+		src = data.NewCommandLine(flag.Args())
 	}
 
 	if err != nil {
@@ -142,7 +142,7 @@ func main() {
 		quit(err)
 	}
 
-	rendered, err := renderTemplate(tmpl, prv)
+	rendered, err := renderTemplate(tmpl, src)
 
 	if err != nil {
 		quit(err)
