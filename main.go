@@ -120,12 +120,10 @@ func main() {
 	}
 
 	var src data.Source
-	var file *os.File
-	defer file.Close()
 
 	switch {
 	case httpRegex.MatchString(*jsonPtr):
-		src = data.NewHttp(*jsonPtr)
+		src = data.NewHttp(*jsonPtr, nil)
 	case *jsonPtr != "":
 		src = data.NewJsonFile(*jsonPtr)
 	default:
@@ -135,6 +133,9 @@ func main() {
 	if err != nil {
 		quit(err)
 	}
+
+	var file *os.File
+	defer file.Close()
 
 	switch {
 	case *inplacePtr:
