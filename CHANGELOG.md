@@ -2,7 +2,11 @@
 
 ## 0.10.0
 * Implemented a generic JSON reader provider for file or network providers to use
-* Expanded functional test script
+* Implemented a simple HTTP JSON reader provider
+* Implemented `github.com/stretchr/testify` for tests
+* Migrated dependency management from glide to dep
+* Updated Travis CI builds to run on current versions of Go
+* Expanded smoke test script
 
 ## 0.9.0
 * Added a functional test script
