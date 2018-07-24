@@ -1,6 +1,6 @@
 # vi: set ft=make:
 
-VERSION = 0.10.0
+VERSION = 0.11.0
 PACKAGE = github.com/johndistasio/cauldron
 
 GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
