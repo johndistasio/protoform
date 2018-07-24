@@ -2,8 +2,9 @@ package data
 
 import (
 	"bytes"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var jsonTests = map[*bytes.Buffer]Data{
@@ -13,8 +14,7 @@ var jsonTests = map[*bytes.Buffer]Data{
 func TestJsonParsing(t *testing.T) {
 	for reader, expected := range jsonTests {
 		actual, err := NewJson(reader).GetData()
-		if err != nil || !reflect.DeepEqual(actual, expected) {
-			t.Errorf("`expected %s got %s", expected, actual)
-		}
+		assert.Nil(t, err)
+		assert.Equal(t, actual, expected)
 	}
 }
