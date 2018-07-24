@@ -32,7 +32,7 @@ Write the rendered template in-place instead of standard output, overwriting the
 
 `-json <path>`
 
-Read template data from the specified path. Template parameters provided on the command line are ignored.
+Read template data from the specified path or URL. Template parameters provided on the command line are ignored.
 
 `-help`
 
@@ -99,7 +99,7 @@ option rotate
 option timeout:5
 ```
 
-Cauldron can also read data from a JSON file with the `-json` flag. Using `examples/treats.json`:
+Cauldron can also read data from a JSON file or a URL that returns JSON with the `-json` flag. Using `examples/treats.json`:
 
 ```
 {
@@ -138,6 +138,12 @@ Slushes:
 1: grape
 2: watermelon
 3: strawberry
+```
+
+URL syntax example:
+
+```
+$ cauldron -template localhost.json -json http://localhost:8080 
 ```
 
 ## Building and Packaging

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -15,6 +16,10 @@ import (
 	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
+)
+
+var (
+	httpRegex = regexp.MustCompile("^http(s){0,1}://")
 )
 
 func init() {
@@ -33,8 +38,8 @@ Arguments:
         Render the template in-place (overwriting the template) instead of to
         standard output. Takes precedence over -file.
     -json:
-        Read template data from the specified JSON file. Command-line template
-        parameters are ignored.
+        Read template data from the specified JSON file or URL. Command-line
+		template parameters are ignored.
     -template:
         Path to the template to be rendered. This argument is required.
     -version:
@@ -115,10 +120,10 @@ func main() {
 	}
 
 	var src data.Source
-	var file *os.File
-	defer file.Close()
 
 	switch {
+	case httpRegex.MatchString(*jsonPtr):
+		src = data.NewHttp(*jsonPtr, nil)
 	case *jsonPtr != "":
 		src = data.NewJsonFile(*jsonPtr)
 	default:
@@ -128,6 +133,9 @@ func main() {
 	if err != nil {
 		quit(err)
 	}
+
+	var file *os.File
+	defer file.Close()
 
 	switch {
 	case *inplacePtr:
