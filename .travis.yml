@@ -1,6 +1,9 @@
 language: go
 
 go:
-  - 1.6.x
-  - 1.7.x
-  - 1.8.x
+  - 1.9.x
+  - 1.10.x
+
+notifications:
+  slack:
+    secure: yNUZ7ChWvXzooGQVYkEuVg8PSY7kpM5tYYGOQDqTGDzwG1+XO6vp+fk9PECvcsDcdc1ob/a22ULSndKfaWkpVPQBYZwW+rzsqRJaODTfj8ysVYRhbkmIrY2ZE1BoX84ZYNj0KQWJgus8W8I8crnE51jVehuuIe4OC2DVytdyz4ofXW8oRkEy3aRqAfxs4nhMH+Z0FkdrbUQ2TwGovcHPmbOgA1iks226TpCz/DwGQiOdEA8NGJzqe49m1prlDi6cEewzu5ln1Rkj3kJKZZFeBPLsB+Acs+iqytSbH4P+euWY/0uk9u4vazD0b4sL88r72GP9ej2U6F8GnHGFu0LOLnpBvqQvSAiyKlPsdCRGimq4dj5MNAwumjantoKtbaEtNhBl6IdIxbLrK0C5V6WNaYwvHoPeHOZr7yLZOVYK2Uo79x4SH0speg68hn/hZKgsRzGe+TbYZDZqhXFUiHEqzPZyWpM8OMA9d8H+NKLOfB8jzB5H8H5zjdDuk5TMBmfCz2Y5poEsXKRTxFup63T5ZZNC47A4qwvFcPn4XrMrRXXk24wpLMiIbQ+QtClHhoxTgV3lE5ZV7EQyNNK5nhj8Anjoi8243Kw9FrjeAREzf7SKLTTdGmrZIpfsFpn8DdnaH5ME/O5pLmuXhKLvKF8W5maUNaxnsaBJYqnKCrY6Jn8=
