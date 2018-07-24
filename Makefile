@@ -23,7 +23,7 @@ archive:
 
 build:
 	@mkdir -p build/
-	go build -ldflags '$(GO_LDFLAGS)' -v -o build/cauldron $(PACKAGE)
+	CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -a -o build/cauldron $(PACKAGE)
 
 test:
 	go test -v $(shell go list ./... | grep -v /vendor/)

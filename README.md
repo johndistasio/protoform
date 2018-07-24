@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/johndistasio/cauldron.svg?branch=master)](https://travis-ci.org/johndistasio/cauldron)
 
-A really simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images for handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings or files for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
+A cauldron is a crude instrument for mixing shit together to get different shit; so is this program.
+
+Cauldron is a very simple provisioning tool, intended to set basic properties of a system via templated files to faciliate a more powerful configuration management tool taking over. This is intended to replace, or at least supplement, shell scripts that might be baked into your images for handling this kind of task now. Cauldron uses Go's standard templating package and accepts JSON-formatted strings or files for more complex data like arrays and maps. The built-in template functions are supplemented with the [Sprig](https://masterminds.github.io/sprig/) library for maximum text-wrangling power.
 
 Cauldron is inspired by [consul-template](https://github.com/hashicorp/consul-template).
 
@@ -30,7 +32,7 @@ Write the rendered template to the specified path instead of standard output. Us
 
 Write the rendered template in-place instead of standard output, overwriting the template file.
 
-`-json <path>`
+`-json <path/url>`
 
 Read template data from the specified path or URL. Template parameters provided on the command line are ignored.
 
@@ -148,10 +150,12 @@ $ cauldron -template localhost.json -json http://localhost:8080
 
 ## Building and Packaging
 
-Cauldron can be built or prepared for packaging with `make`. The default `make` target will run the tests and build a binary for the current platform in `build/`.
+Cauldron can be built or prepared for packaging with `make`. The default `make` target will run the tests and build a new binary for the current platform in `build/`.
 
 A spec file is included for RPM builds.
 
 ## Testing
 
-Go tests can be run with `make test`. A functional test script, `functest.sh`, is available. This uses some pre-rendered templates in `examples/` and a binary from `build/` (you'll need to run `make build` first) to test Cauldron like a user might.
+Go tests can be run with `make test`.
+
+A smoke test script, `smoketest.sh`, is available. This uses some pre-rendered templates in `examples/` and a binary from `build/` (you'll need to run `make build` first) to test Cauldron like a user might.
