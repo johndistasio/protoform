@@ -15,7 +15,7 @@ TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
 .PHONY: test build smoketest
 
-default: clean test build smoketest
+default: clean build
 
 archive:
 	@mkdir -p build/
@@ -30,6 +30,18 @@ test:
 
 smoketest:
 	bash ./smoketest.sh
+
+fmt:
+	@files=$$(go fmt github.com/johndistasio/cauldron); \
+	if [ -n "$$files" ]; then \
+	  echo "Incorrect formatting on:"; \
+	  echo $$files; \
+	  exit 1; \
+	fi
+
+lint:
+	go get -u golang.org/x/lint/golint
+	golint -set_exit_status
 
 clean:
 	@rm -rf build/

@@ -1,8 +1,20 @@
 language: go
 
 go:
-  - 1.9.x
-  - 1.10.x
+  - "1.10.x"
+
+# Skip automatic Makefile invocation
+install: true
+
+jobs:
+  include:
+    - stage: build
+      script:
+       - make fmt
+       - make lint
+       - make test
+       - make build
+       - make smoketest
 
 notifications:
   slack:
