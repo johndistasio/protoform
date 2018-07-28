@@ -32,7 +32,7 @@ smoketest:
 	bash ./smoketest.sh
 
 fmt:
-	@files=$$(go fmt github.com/johndistasio/cauldron); \
+	@files=$$(go fmt $(PACKAGE)); \
 	if [ -n "$$files" ]; then \
 	  echo "Incorrect formatting on:"; \
 	  echo $$files; \
