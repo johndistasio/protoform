@@ -64,7 +64,7 @@ func renderTemplate(t *template.Template, s data.Source) ([]byte, error) {
 	d, err := s.GetData()
 
 	if err != nil {
-		err = errors.New(fmt.Sprintf("failed to parse data: %s", err.Error()))
+		err = fmt.Errorf("failed to parse data: %s", err.Error())
 		return nil, err
 	}
 
@@ -167,7 +167,7 @@ func main() {
 		err := exec.Command(cmd[0], cmd[1:]...).Run()
 
 		if err != nil {
-			err = errors.New(fmt.Sprintf("failed to exec: %s", err.Error()))
+			err = fmt.Errorf("failed to exec: %s", err.Error())
 			quit(err)
 		}
 	}
