@@ -13,12 +13,13 @@ import (
 	"text/template"
 
 	"github.com/johndistasio/cauldron/data"
-	"github.com/johndistasio/cauldron/version"
 
 	"github.com/Masterminds/sprig"
 )
 
 var (
+	version   = "next"
+	commit    = "unknown"
 	httpRegex = regexp.MustCompile("^http(s){0,1}://")
 )
 
@@ -101,7 +102,7 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Printf("cauldron %s\n", version.ComputeVersionString())
+		fmt.Printf("cauldron version=%s commit=%s\n", version, commit)
 		os.Exit(0)
 	}
 
