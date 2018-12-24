@@ -10,6 +10,7 @@ jobs:
   include:
     - stage: build
       script:
+       - go get -u golang.org/x/lint/golint
        - make fmt
        - make lint
        - make test

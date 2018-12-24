@@ -40,7 +40,6 @@ fmt:
 	fi
 
 lint:
-	go get -u golang.org/x/lint/golint
 	golint -set_exit_status
 
 clean:

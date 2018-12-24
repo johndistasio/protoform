@@ -1,0 +1,16 @@
+github.com/Masterminds/semver v1.2.2 h1:ptelpryog9A0pR4TGFvIAvw2c8SaNrYkFtfrxhSviss=
+github.com/Masterminds/semver v1.2.2/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
+github.com/Masterminds/sprig v0.0.0-20170315180732-23597e5f6ad0 h1:6KKx4AC2e4LRkkQ81ABL5YAaERkE5phPHplqKPYM9Ik=
+github.com/Masterminds/sprig v0.0.0-20170315180732-23597e5f6ad0/go.mod h1:y6hNFY5UBTIWBxnzTeuNhlNS5hqE0NB0E6fgfo2Br3o=
+github.com/aokoli/goutils v0.0.0-20170418163800-174f97f737d4 h1:dgmVdHLOHVvDEOKaKbFS89HGt5CUyIUTvZuowgnz6nc=
+github.com/aokoli/goutils v0.0.0-20170418163800-174f97f737d4/go.mod h1:SijmP0QR8LtwsmDs8Yii5Z/S4trXFGFC2oO5g9DP+DQ=
+github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
+github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/satori/go.uuid v1.1.0 h1:B9KXyj+GzIpJbV7gmr873NsY6zpbxNy24CBtGrk7jHo=
+github.com/satori/go.uuid v1.1.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
+github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1w=
+github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
+golang.org/x/crypto v0.0.0-20170425193731-c7af5bf2638a h1:UfXM/I0Z0u0+ZE4d4Rw2Bi8n81rX8UfXTgXfMsJ4WWU=
+golang.org/x/crypto v0.0.0-20170425193731-c7af5bf2638a/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
