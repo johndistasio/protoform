@@ -23,6 +23,7 @@ archive:
 
 build:
 	@mkdir -p build/
+	go mod download
 	CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -a -o build/cauldron $(PACKAGE)
 
 test:
