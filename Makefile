@@ -1,6 +1,6 @@
 # vi: set ft=make:
 
-VERSION = 0.10.0
+VERSION = 0.11.0
 PACKAGE = github.com/johndistasio/cauldron
 
 GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
@@ -15,7 +15,7 @@ TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
 .PHONY: test build smoketest
 
-default: clean test build smoketest
+default: clean build
 
 archive:
 	@mkdir -p build/
@@ -30,6 +30,17 @@ test:
 
 smoketest:
 	bash ./smoketest.sh
+
+fmt:
+	@files=$$(go fmt $(PACKAGE)); \
+	if [ -n "$$files" ]; then \
+	  echo "Incorrect formatting on:"; \
+	  echo $$files; \
+	  exit 1; \
+	fi
+
+lint:
+	golint -set_exit_status
 
 clean:
 	@rm -rf build/
