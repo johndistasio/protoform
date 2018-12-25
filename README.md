@@ -152,8 +152,6 @@ $ cauldron -template localhost.json -json http://localhost:8080
 
 Cauldron can be built or prepared for packaging with `make`. The default `make` target will run the tests and build a new binary for the current platform in `build/`.
 
-A spec file is included for RPM builds.
-
 ## Testing
 
 Go tests can be run with `make test`.
