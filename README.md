@@ -56,9 +56,9 @@ More complex data can be provided with JSON-formatted strings, e.g. `animals='["
 
 ## Examples
 
-The files shown here are all in the `examples/` directory.
+The files shown here are all in the `testdata/` directory.
 
-Given `examples/hello.tmpl`:
+Given `testdata/hello.tmpl`:
 
 ```
 Hello there, {{.name}}! Good {{.time}}!
@@ -67,14 +67,14 @@ Hello there, {{.name}}! Good {{.time}}!
 We can use Cauldron to write a friendly message to admins that like to sleep in:
 
 ```
-$ cauldron -template examples/hello.tmpl name=sleepyhead time=morning > /etc/motd
+$ cauldron -template testdata/hello.tmpl name=sleepyhead time=morning > /etc/motd
 $ cat /etc/motd
 Hello there, sleepyhead! Good morning!
 ```
 
 ### JSON
 
-We can use JSON-formatted data to configure something more complex like `resolv.conf`. Using `examples/resolv.conf.tmpl`:
+We can use JSON-formatted data to configure something more complex like `resolv.conf`. Using `testdata/resolv.conf.tmpl`:
 
 ```
 {{ range .nameservers -}}
@@ -91,7 +91,7 @@ option {{ $key }}{{ with $value }}{{ printf ":%s" . }}{{end}}
 By using JSON-formatted strings, we can pass arrays and maps to Cauldron:
 
 ```
-$ cauldron -template examples/resolv.conf.tmpl nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' > /etc/resolv.conf
+$ cauldron -template testdata/resolv.conf.tmpl nameservers='["10.20.30.40", "8.8.8.8"]' domain=mydomain.com options='{"rotate": "", "timeout": "5"}' > /etc/resolv.conf
 $ cat /etc/resolv.conf
 nameserver 10.20.30.40
 nameserver 8.8.8.8
@@ -101,7 +101,7 @@ option rotate
 option timeout:5
 ```
 
-Cauldron can also read data from a JSON file or a URL that returns JSON with the `-json` flag. Using `examples/treats.json`:
+Cauldron can also read data from a JSON file or a URL that returns JSON with the `-json` flag. Using `testdata/treats.json`:
 
 ```
 {
@@ -110,7 +110,7 @@ Cauldron can also read data from a JSON file or a URL that returns JSON with the
 }
 ```
 
-We can write a simple template like `examples/treats.tmpl` to list all of these things:
+We can write a simple template like `testdata/treats.tmpl` to list all of these things:
 
 ```
 Summer Treats Menu:
@@ -128,7 +128,7 @@ Slushes:
 Finally, we render the template:
 
 ```
-$ cauldron -template examples/treats.tmpl -json examples/treats.json
+$ cauldron -template testdata/treats.tmpl -json testdata/treats.json
 Summer Treats Menu:
 
 Ice Cream:
