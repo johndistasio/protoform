@@ -5,7 +5,8 @@ default: clean fmt lint test build smoketest
 
 .PHONY: build
 build:
-	@goreleaser release --skip-publish --rm-dist --snapshot
+	@go mod download
+	@CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -o cauldron $(PACKAGE)
 
 .PHONY: test
 test:
@@ -14,7 +15,7 @@ test:
 
 .PHONY: smoketest
 smoketest:
-	@./smoketest.sh "dist/$(shell go env GOOS)_$(shell go env GOARCH)/cauldron"
+	@bash ./smoketest.sh
 
 .PHONY: fmt
 fmt:
@@ -31,4 +32,4 @@ lint:
 
 .PHONY: clean
 clean:
-	@rm -rf dist/
+	@rm cauldron 2> /dev/null || :
