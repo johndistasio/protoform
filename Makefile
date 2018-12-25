@@ -1,13 +1,11 @@
 # vi: set ft=make:
 
-VERSION = 0.11.0
 PACKAGE = github.com/johndistasio/cauldron
 
-GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
-GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
-GO_LDFLAGS   = $(addprefix -X main.,version=$(VERSION) commit=$(GIT_REVISION))
+GIT_TAG    = $(shell git describe --tags --always 2>/dev/null)
+GO_LDFLAGS = $(addprefix -X main.,version=$(GIT_TAG))
 
-TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
+TARBALL_EXCLUDE = $(addprefix --exclude=,build dist rpmbuild .git .idea .vagrant)
 
 .PHONY: test build smoketest
 
@@ -15,7 +13,7 @@ default: clean build
 
 archive:
 	@mkdir -p build/
-	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(VERSION).tar.gz .
+	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(GIT_TAG).tar.gz .
 
 build:
 	@mkdir -p build/

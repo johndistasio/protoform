@@ -19,7 +19,7 @@ import (
 
 var (
 	version   = "next"
-	commit    = "unknown"
+	commit    = ""
 	httpRegex = regexp.MustCompile("^http(s){0,1}://")
 )
 
@@ -102,7 +102,11 @@ func main() {
 	}
 
 	if *versionPtr {
-		fmt.Printf("cauldron version=%s commit=%s\n", version, commit)
+		versionString := fmt.Sprintf("cauldron version=%s", version)
+		if commit != "" {
+			versionString += fmt.Sprintf(" commit=%s", commit)
+		}
+		fmt.Println(versionString)
 		os.Exit(0)
 	}
 
