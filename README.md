@@ -148,6 +148,8 @@ URL syntax example:
 $ cauldron -template localhost.json -json http://localhost:8080 
 ```
 
-## Releases
+## Releases and Builds
 
 Releases are available though Github on the [releases](https://github.com/johndistasio/cauldron/releases) page.
+
+Releases (and local builds) are driven by [GoReleaser](https://goreleaser.com/). Makefile commands expect it to be present.
