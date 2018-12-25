@@ -38,7 +38,7 @@ func (p *Json) GetData() (Data, error) {
 }
 
 func (p *JsonFile) GetData() (Data, error) {
-	file, err := os.OpenFile(p.path, os.O_RDONLY, 0600)
+	file, err := os.Open(p.path)
 	defer file.Close()
 
 	if err != nil {
