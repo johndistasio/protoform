@@ -148,12 +148,6 @@ URL syntax example:
 $ cauldron -template localhost.json -json http://localhost:8080 
 ```
 
-## Building and Packaging
+## Releases
 
-Cauldron can be built or prepared for packaging with `make`. The default `make` target will run the tests and build a new binary for the current platform in `build/`.
-
-## Testing
-
-Go tests can be run with `make test`.
-
-A smoke test script, `smoketest.sh`, is available. This uses some pre-rendered templates in `examples/` and a binary from `build/` (you'll need to run `make build` first) to test Cauldron like a user might.
+Releases are available though Github on the [releases](https://github.com/johndistasio/cauldron/releases) page.
