@@ -5,28 +5,24 @@ PACKAGE = github.com/johndistasio/cauldron
 GIT_TAG    = $(shell git describe --tags --always 2>/dev/null)
 GO_LDFLAGS = $(addprefix -X main.,version=$(GIT_TAG))
 
-TARBALL_EXCLUDE = $(addprefix --exclude=,build dist rpmbuild .git .idea .vagrant)
+.PHONY: default
+default: clean fmt lint test build smoketest
 
-.PHONY: test build smoketest
-
-default: clean build
-
-archive:
-	@mkdir -p build/
-	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(GIT_TAG).tar.gz .
-
+.PHONY: build
 build:
-	@mkdir -p build/
-	go mod download
-	CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -a -o build/cauldron $(PACKAGE)
+	@go mod download
+	@CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -o cauldron $(PACKAGE)
 
+.PHONY: test
 test:
-	go mod download
-	go test -v ./...
+	@go mod download
+	@go test -v ./...
 
+.PHONY: smoketest
 smoketest:
-	bash ./smoketest.sh
+	@bash ./smoketest.sh
 
+.PHONY: fmt
 fmt:
 	@files=$$(go fmt $(PACKAGE)); \
 	if [ -n "$$files" ]; then \
@@ -35,8 +31,10 @@ fmt:
 	  exit 1; \
 	fi
 
+.PHONY: lint
 lint:
-	golint -set_exit_status
+	@golint -set_exit_status
 
+.PHONY: clean
 clean:
-	@rm -rf build/
+	@rm cauldron 2> /dev/null || :
