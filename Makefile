@@ -6,7 +6,7 @@ default: clean fmt lint test build smoketest
 .PHONY: build
 build:
 	@go mod download
-	@CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -o cauldron $(PACKAGE)
+	@CGO_ENABLED=0 go build
 
 .PHONY: test
 test:
