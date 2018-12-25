@@ -31,7 +31,7 @@ Arguments:
     -help:
         Print this text and exit.
     -exec:
-	    Run the specified command after successful template rendering. The
+        Run the specified command after successful template rendering. The
         command does not run in a shell so redirection, pipes, etc. won't work.
     -file:
         Render the template to the specified path instead of to standard output.
@@ -40,20 +40,20 @@ Arguments:
         standard output. Takes precedence over -file.
     -json:
         Read template data from the specified JSON file or URL. Command-line
-		template parameters are ignored.
+        template parameters are ignored.
     -template:
         Path to the template to be rendered. This argument is required.
     -version:
         Print version and build details, then exit.
 
 Template Parameters:
-    Template parameters take the form of key=value and are used to populate the
-    template. The parameter 'color=red' would be referenced in the template as
-    {{ .color }}.
+    Template parameters take the form of 'key=value' and are used to populate
+    the template. The parameter 'color=red' would be referenced in the template
+    as {{ .color }}.
 
 Template:
     A template file must specified with the -template flag. The template must
-	use the normal Go text template format.
+    use the normal Go text template format.
 
 Example:
     $ cauldron -template car.tmpl color=red kind=sedan > car
