@@ -11,7 +11,12 @@ build:
 .PHONY: test
 test:
 	@go mod download
-	@go test -v ./...
+	@go test -cover -v ./...
+
+.PHONY: coverage
+coverage:
+	@go test -coverprofile=coverage.out ./...
+	@go tool cover -html=coverage.out
 
 .PHONY: smoketest
 smoketest:
