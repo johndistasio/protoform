@@ -30,6 +30,8 @@ changelog:
     - '^docs:'
     - '^test:'
 brew:
+  description: 'A command-line interface for templates.'
+  homepage: 'https://github.com/johndistasio/cauldron'
   commit_author:
     name: johndistasio
     email: jndistasio@gmail.com
