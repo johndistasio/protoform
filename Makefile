@@ -5,11 +5,7 @@ PACKAGE = github.com/johndistasio/cauldron
 
 GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
 GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
-
-GO_ARCH    = $(shell go env GOARCH)
-GO_OS      = $(shell go env GOOS)
-GO_VERSION = $(shell go version | awk '{print $$3}' | tr -d 'go')
-GO_LDFLAGS = $(addprefix -X main.,version=$(VERSION) commit=$(GIT_REVISION))
+GO_LDFLAGS   = $(addprefix -X main.,version=$(VERSION) commit=$(GIT_REVISION))
 
 TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
 
