@@ -64,4 +64,10 @@ func TestHttpHeaderParsing(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, actual)
+
+	actual, err = NewHttp(server.URL, nil).GetData()
+	expected = Data{"fail": true}
+
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
 }
