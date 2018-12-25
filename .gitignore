@@ -18,3 +18,5 @@ rpmbuild/
 .vagrant/
 
 dist/
+
+cauldron
