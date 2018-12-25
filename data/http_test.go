@@ -25,6 +25,12 @@ func TestHttpJsonParsing(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestHttpBadConfig(t *testing.T) {
+	headers := map[string]string{"Content-Type": "application/json"}
+	_, err := NewHttp("", headers).GetData()
+	assert.NotNil(t, err)
+}
+
 func TestHttpBadResponse(t *testing.T) {
 	handler := http.HandlerFunc(func(
 		w http.ResponseWriter, r *http.Request) {
@@ -55,6 +61,12 @@ func TestHttpHeaderParsing(t *testing.T) {
 	headers := map[string]string{"X-Test-Header": "potato"}
 	actual, err := NewHttp(server.URL, headers).GetData()
 	expected := Data{"fail": false}
+
+	assert.Nil(t, err)
+	assert.Equal(t, expected, actual)
+
+	actual, err = NewHttp(server.URL, nil).GetData()
+	expected = Data{"fail": true}
 
 	assert.Nil(t, err)
 	assert.Equal(t, expected, actual)
