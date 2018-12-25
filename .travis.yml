@@ -20,8 +20,8 @@ script:
  - make build
  - make smoketest
 
-before_deploy:
-  - docker pull goreleaser/goreleaser
+#before_deploy:
+#  - docker pull goreleaser/goreleaser
 
 deploy:
   provider: script
