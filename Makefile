@@ -1,10 +1,5 @@
 # vi: set ft=make:
 
-PACKAGE = github.com/johndistasio/cauldron
-
-GIT_TAG    = $(shell git describe --tags --always 2>/dev/null)
-GO_LDFLAGS = $(addprefix -X main.,version=$(GIT_TAG))
-
 .PHONY: default
 default: clean fmt lint test build smoketest
 
@@ -23,7 +18,7 @@ smoketest:
 
 .PHONY: fmt
 fmt:
-	@files=$$(go fmt $(PACKAGE)); \
+	@files=$$(go fmt ./...); \
 	if [ -n "$$files" ]; then \
 	  echo "Incorrect formatting on:"; \
 	  echo $$files; \
