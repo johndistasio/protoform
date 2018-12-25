@@ -33,26 +33,26 @@ result() {
 }
 
 title "Simple Rendering"
-diff <(${CAULDRON} -template examples/hello.tmpl name=John time=morning) \
-    examples/rendered/hello.rendered
+diff <(${CAULDRON} -template testdata/hello.tmpl name=John time=morning) \
+    testdata/hello.rendered
 result $?
 
 title "JSON Rendering"
-diff <(${CAULDRON} -template examples/resolv.conf.tmpl \
+diff <(${CAULDRON} -template testdata/resolv.conf.tmpl \
     nameservers='["10.20.30.40", "8.8.8.8"]' \
     domain=mydomain.com \
     options='{"rotate": "", "timeout": "5"}') \
-    examples/rendered/resolv.conf.rendered
+    testdata/resolv.conf.rendered
 result $?
 
 title "External JSON Datasource Rendering"
-diff <(${CAULDRON} -template examples/treats.tmpl -json examples/treats.json) \
-    examples/rendered/treats.rendered
+diff <(${CAULDRON} -template testdata/treats.tmpl -json testdata/treats.json) \
+    testdata/treats.rendered
 result $?
 
 title "Render to File"
-${CAULDRON} -template examples/hello.tmpl -file "${TMPFILE}" name=John time=morning \
- && diff "${TMPFILE}" examples/rendered/hello.rendered
+${CAULDRON} -template testdata/hello.tmpl -file "${TMPFILE}" name=John time=morning \
+ && diff "${TMPFILE}" testdata/hello.rendered
 result $?
 
 exit $EXIT_CODE

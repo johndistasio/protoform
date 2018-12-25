@@ -1,7 +1,6 @@
 package data
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -35,7 +34,7 @@ func (p *Http) GetData() (Data, error) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, errors.New(fmt.Sprintf("received http %s", res.Status))
+		return nil, fmt.Errorf("received http %s", res.Status)
 	}
 
 	return (&Json{res.Body}).GetData()
