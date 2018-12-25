@@ -29,3 +29,11 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+brew:
+  commit_author:
+    name: johndistasio
+    email: jndistasio@gmail.com
+  github:
+    owner: johndistasio
+    name: homebrew-tap
+  folder: Formula
