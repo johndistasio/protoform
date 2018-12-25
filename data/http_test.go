@@ -25,6 +25,12 @@ func TestHttpJsonParsing(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestHttpBadConfig(t *testing.T) {
+	headers := map[string]string{"Content-Type": "application/json"}
+	_, err := NewHttp("", headers).GetData()
+	assert.NotNil(t, err)
+}
+
 func TestHttpBadResponse(t *testing.T) {
 	handler := http.HandlerFunc(func(
 		w http.ResponseWriter, r *http.Request) {
