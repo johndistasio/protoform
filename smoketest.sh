@@ -5,7 +5,7 @@
 # @author John DiStasio <jndistasio@gmail.com>
 # @copyright Copyright (c) 2017 John DiStasio
 #
-CAULDRON=build/cauldron
+CAULDRON="${PWD}/cauldron"
 
 [[ -e ${CAULDRON} ]] || { echo "${CAULDRON} missing, try 'make build' first" 2>&1; exit 1; }
 

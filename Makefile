@@ -1,36 +1,28 @@
 # vi: set ft=make:
 
-VERSION = 0.11.0
 PACKAGE = github.com/johndistasio/cauldron
 
-GIT_REVISION = $(shell git rev-parse --short HEAD 2>/dev/null)
-GIT_TAG      = $(shell git describe --tags --always 2>/dev/null)
+GIT_TAG    = $(shell git describe --tags --always 2>/dev/null)
+GO_LDFLAGS = $(addprefix -X main.,version=$(GIT_TAG))
 
-GO_ARCH    = $(shell go env GOARCH)
-GO_OS      = $(shell go env GOOS)
-GO_VERSION = $(shell go version | awk '{print $$3}' | tr -d 'go')
-GO_LDFLAGS = $(addprefix -X $(PACKAGE)/version.,version=$(VERSION) revision=$(GIT_REVISION) tag=$(GIT_TAG) goarch=$(GO_ARCH) goos=$(GO_OS) goversion=$(GO_VERSION))
+.PHONY: default
+default: clean fmt lint test build smoketest
 
-TARBALL_EXCLUDE = $(addprefix --exclude=,build rpmbuild .git .idea .vagrant)
-
-.PHONY: test build smoketest
-
-default: clean build
-
-archive:
-	@mkdir -p build/
-	tar $(TARBALL_EXCLUDE) -czvf build/cauldron-$(VERSION).tar.gz .
-
+.PHONY: build
 build:
-	@mkdir -p build/
-	CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -a -o build/cauldron $(PACKAGE)
+	@go mod download
+	@CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -o cauldron $(PACKAGE)
 
+.PHONY: test
 test:
-	go test -v $(shell go list ./... | grep -v /vendor/)
+	@go mod download
+	@go test -v ./...
 
+.PHONY: smoketest
 smoketest:
-	bash ./smoketest.sh
+	@bash ./smoketest.sh
 
+.PHONY: fmt
 fmt:
 	@files=$$(go fmt $(PACKAGE)); \
 	if [ -n "$$files" ]; then \
@@ -39,8 +31,10 @@ fmt:
 	  exit 1; \
 	fi
 
+.PHONY: lint
 lint:
-	golint -set_exit_status
+	@golint -set_exit_status
 
+.PHONY: clean
 clean:
-	@rm -rf build/
+	@rm cauldron 2> /dev/null || :

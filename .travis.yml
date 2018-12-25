@@ -3,19 +3,33 @@ language: go
 go:
   - "1.11.x"
 
-# Skip automatic Makefile invocation
-install: true
+env:
+  - GO111MODULE=on
 
-jobs:
-  include:
-    - stage: build
-      script:
-       - go get -u golang.org/x/lint/golint
-       - make fmt
-       - make lint
-       - make test
-       - make build
-       - make smoketest
+services:
+  - docker
+
+install:
+   - go get -u golang.org/x/lint/golint
+   - go mod download
+
+script:
+ - make fmt
+ - make lint
+ - make test
+ - make build
+ - make smoketest
+
+before_deploy:
+  - docker pull goreleaser/goreleaser
+
+deploy:
+  provider: script
+  # TODO replace with Docker-based invocation
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    branch: master
+    tags: true
 
 notifications:
   slack:
