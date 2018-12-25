@@ -27,7 +27,8 @@ build:
 	CGO_ENABLED=0 go build -ldflags '$(GO_LDFLAGS)' -a -o build/cauldron $(PACKAGE)
 
 test:
-	go test -v $(shell go list ./... | grep -v /vendor/)
+	go mod download
+	go test -v ./...
 
 smoketest:
 	bash ./smoketest.sh
