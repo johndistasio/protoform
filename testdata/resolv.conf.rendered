@@ -1,0 +1,6 @@
+nameserver 10.20.30.40
+nameserver 8.8.8.8
+domain mydomain.com
+
+option rotate
+option timeout:5
